@@ -19,7 +19,7 @@ const userSignupController = async (req, res) => {
             firstname,
             lastname,
             email,
-            password: hashedPassword,
+            password: hashedPassword
         });
 
         const token = user.generateAuthToken();
@@ -44,12 +44,10 @@ const userSignupController = async (req, res) => {
 
 const userLoginController = async (req, res) => {
     try {
-
         const { email, password } = req.body;
 
         const { error } = validateLoginUser({ email, password });
         if (error) return res.status(401).json({ "error": error.details[0].message });
-
 
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ "error": "Invalid email" });
@@ -61,11 +59,24 @@ const userLoginController = async (req, res) => {
         return res.status(200).json({ token });
 
     } catch (error) {
+
         return res.status(500).json({ "error": "Internal server error" });
+    }
+}
+
+const userAccountInfo = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId); 
+        if(!user) return res.status(404).json({"error": "User not found"}); 
+        const {password, ...withoutPassword} = user._doc;      
+        return res.status(200).json(withoutPassword);
+    } catch (error) {
+        return res.status(500).json({"error": "Internal server error"});
     }
 }
 
 module.exports = {
     userSignupController,
-    userLoginController
+    userLoginController,
+    userAccountInfo
 }

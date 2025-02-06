@@ -26,6 +26,23 @@ const user = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    phoneNumber: {
+        type: String
+    },
+    address: {
+        streetAddress: {
+            type: String
+        },
+        country: {
+            type: String
+        },
+        city: {
+            type: String
+        },
+        postalCode: {
+            type: String
+        }
     }
 }, { timestamps: true });
 
