@@ -14,8 +14,8 @@ const userSignupController = async (req, res) => {
         });
         const data = user.toObject();
         delete data.password;
-        
-        return res.status(200).json(data);
+
+        return res.status(200).header('x-auth-token',user.generateAuthToken()).json(data);
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
