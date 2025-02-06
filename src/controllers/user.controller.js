@@ -1,21 +1,26 @@
 const User = require('../models/user.model');
+const bcrypt = require('bcrypt');
 
 const userSignupController = async (req, res) => {
     try {
-        const user = new User({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            email: req.body.email,
-            password: req.body.password,
+        const { firstname, lastname, email, password } = req.body;
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const user = await User.create({
+            firstname,
+            lastname,
+            email,
+            password: hashedPassword,
         });
-        await user.save();
-        const {password, ...withoutPassword} =  user._doc;
-        return res.status(200).json(withoutPassword);
+        const data = user.toObject();
+        delete data.password;
+        
+        return res.status(200).json(data);
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
-             "error-message": error.message
-            };
+            "error-message": error.message
+        };
         return res.status(500).json(result);
     }
 }
