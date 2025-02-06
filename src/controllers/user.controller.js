@@ -30,7 +30,6 @@ const userSignupController = async (req, res) => {
         return res.status(201).header("x-auth-token", token).json(data);
 
     } catch (error) {
-
         if (error.code === 11000) return res.status(409).json({ "error-message": "Duplicate entry " + error.message })
 
         const result = {
@@ -59,19 +58,20 @@ const userLoginController = async (req, res) => {
         return res.status(200).json({ token });
 
     } catch (error) {
-
         return res.status(500).json({ "error": "Internal server error" });
     }
 }
 
 const userAccountInfo = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId); 
-        if(!user) return res.status(404).json({"error": "User not found"}); 
-        const {password, ...withoutPassword} = user._doc;      
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({ "error": "User not found" });
+
+        const { password, ...withoutPassword } = user._doc;
         return res.status(200).json(withoutPassword);
+
     } catch (error) {
-        return res.status(500).json({"error": "Internal server error"});
+        return res.status(500).json({ "error": "Internal server error" });
     }
 }
 

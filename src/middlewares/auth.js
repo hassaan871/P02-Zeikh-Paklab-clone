@@ -8,6 +8,7 @@ const auth = (req, res, next) =>{
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         req.user = { userId: decoded._id };
         next();
+        
     } catch (error) {
         return res.status(401).json({"auth error" :error});
     }
