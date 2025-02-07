@@ -28,7 +28,8 @@ const user = new mongoose.Schema({
         default: false
     },
     phoneNumber: {
-        type: String
+        type: String,
+        // min: 11
     },
     address: {
         streetAddress: {
