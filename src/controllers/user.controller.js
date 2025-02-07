@@ -81,10 +81,24 @@ const userPhoneNumber = async (req, res) => {
         if(!phoneNumber) return res.status(400).json({"error": "Phone number is required"});
 
         const user = await User.findByIdAndUpdate(req.user.userId, {$set: {phoneNumber}}, {new: true});
-        
         if(!user) return res.status(404).json({"error": "User not found"});
 
         return res.status(200).json({"message": "Phone number updated", user});
+
+    } catch (error) {
+        return res.status(500).json({"error": "Internal server error"});
+    }
+}
+
+const userStreetAddress = async (req, res) => {
+    try {
+        const { streetAddress } = req.body;
+        if(!streetAddress) return res.status(400).json({"error": "Street address is required"});
+
+        const user = await User.findByIdAndUpdate(req.user.userId, {$set: {"address.streetAddress": streetAddress}}, {new: true});
+        if(!user) return res.status(404).json({"error": "User not found"});
+
+        return res.status(200).json({"message": "Street Address updated", user})
 
     } catch (error) {
         return res.status(500).json({"error": "Internal server error"});
@@ -95,5 +109,6 @@ module.exports = {
     userSignupController,
     userLoginController,
     userAccountInfo,
-    userPhoneNumber
+    userPhoneNumber,
+    userStreetAddress
 }
