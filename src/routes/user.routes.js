@@ -4,7 +4,9 @@ const {
     userAccountInfoController,
     userPhoneNumberController,
     userStreetAddressController,
-    userPostalCodeController
+    userPostalCodeController,
+    userProvinceController,
+    userCityController
 } = require('../controllers/user.controller');
 
 const auth = require('../middlewares/auth.middleware');
@@ -19,6 +21,8 @@ router.post('/login', userLoginController);
 router.get('/account-info', [auth], userAccountInfoController);
 router.post('/phone-number', [auth], userPhoneNumberController);
 router.post('/street-address', [auth], userStreetAddressController);
+router.post('/province', [auth], userProvinceController);
+router.post('/city', [auth], userCityController);
 router.post('/postal-code', [auth], userPostalCodeController);
 
 module.exports = router;

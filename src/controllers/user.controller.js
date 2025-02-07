@@ -126,11 +126,43 @@ const userPostalCodeController = async (req, res) => {
     }
 }
 
+const userProvinceController = async (req, res) => {
+    try {
+        const { province } = req.body;
+        if (!province) return res.status(400).json({ "error": "Province is required" });
+
+        const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.province": province } }, { new: true });
+        if (!user) return res.status(404).json({ "error": "User not found" });
+
+        return res.status(200).json({ "message": "Province updated", user });
+
+    } catch (error) {
+        return res.status(500).json({ "error": "Internal server error" });
+    }
+}
+
+const userCityController = async (req, res) => {
+    try {
+        const { city } = req.body;
+        if (!city) return res.status(400).json({ "error": "City is required" });
+
+        const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.city": city } }, { new: true });
+        if (!user) return res.status(404).json({ "error": "User not found" });
+
+        return res.status(200).json({ "message": "City updated", user });
+
+    } catch (error) {
+        return res.status(500).json({ "error": "Internal server error" });
+    }
+}
+
 module.exports = {
     userSignupController,
     userLoginController,
     userAccountInfoController,
     userPhoneNumberController,
     userStreetAddressController,
-    userPostalCodeController
+    userPostalCodeController,
+    userProvinceController,
+    userCityController
 }
