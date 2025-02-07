@@ -30,7 +30,7 @@ const userSignupController = async (req, res) => {
         return res.status(201).header("x-auth-token", token).json(data);
 
     } catch (error) {
-        if (error.code === 11000) return res.status(409).json({ "error-message": "Duplicate entry " + error.message })
+        if (error.code === 11000) return res.status(409).json({ "error-message": "Duplicate entry " + error.message });
 
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -62,7 +62,7 @@ const userLoginController = async (req, res) => {
     }
 }
 
-const userAccountInfo = async (req, res) => {
+const userAccountInfoController = async (req, res) => {
     try {
         const user = await User.findById(req.user.userId);
         if (!user) return res.status(404).json({ "error": "User not found" });
@@ -75,40 +75,62 @@ const userAccountInfo = async (req, res) => {
     }
 }
 
-const userPhoneNumber = async (req, res) => {
+const userPhoneNumberController = async (req, res) => {
     try {
         const { phoneNumber } = req.body;
-        if(!phoneNumber) return res.status(400).json({"error": "Phone number is required"});
+        if (!phoneNumber) return res.status(400).json({ "error": "Phone number is required" });
 
-        const user = await User.findByIdAndUpdate(req.user.userId, {$set: {phoneNumber}}, {new: true});
-        if(!user) return res.status(404).json({"error": "User not found"});
+        const phoneNumberRegex = /^\d{11}$/;
+        if (!phoneNumberRegex.test(phoneNumber)) return res.status(400).json({ "error": "phone number must be of 11 digit" });
 
-        return res.status(200).json({"message": "Phone number updated", user});
+        const user = await User.findByIdAndUpdate(req.user.userId, { $set: { phoneNumber } }, { new: true });
+        if (!user) return res.status(404).json({ "error": "User not found" });
+
+        return res.status(200).json({ "message": "Phone number updated", user });
 
     } catch (error) {
-        return res.status(500).json({"error": "Internal server error"});
+        return res.status(500).json({ "error": "Internal server error" });
     }
 }
 
-const userStreetAddress = async (req, res) => {
+const userStreetAddressController = async (req, res) => {
     try {
         const { streetAddress } = req.body;
-        if(!streetAddress) return res.status(400).json({"error": "Street address is required"});
+        if (!streetAddress) return res.status(400).json({ "error": "Street address is required" });
 
-        const user = await User.findByIdAndUpdate(req.user.userId, {$set: {"address.streetAddress": streetAddress}}, {new: true});
-        if(!user) return res.status(404).json({"error": "User not found"});
+        const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.streetAddress": streetAddress } }, { new: true });
+        if (!user) return res.status(404).json({ "error": "User not found" });
 
-        return res.status(200).json({"message": "Street Address updated", user})
+        return res.status(200).json({ "message": "Street Address updated", user });
 
     } catch (error) {
-        return res.status(500).json({"error": "Internal server error"});
+        return res.status(500).json({ "error": "Internal server error" });
+    }
+}
+
+const userPostalCodeController = async (req, res) => {
+    try {
+        const { postalCode } = req.body;
+        if (!postalCode) return res.status(400).json({ "error": "Postal code is required" });
+
+        const postalCodeRegex = /^\d{5}$/;
+        if (!postalCodeRegex.test(postalCode)) return res.status(400).json({ "error": "postal code must be a 5 digit number" });
+
+        const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.postalCode": postalCode } }, { new: true });
+        if (!user) return res.status(404).json({ "error": "User not found" });
+
+        return res.status(200).json({ "message": "Postal Code updated", user });
+
+    } catch (error) {
+        return res.status(500).json({ "error": "Internal server error" });
     }
 }
 
 module.exports = {
     userSignupController,
     userLoginController,
-    userAccountInfo,
-    userPhoneNumber,
-    userStreetAddress
+    userAccountInfoController,
+    userPhoneNumberController,
+    userStreetAddressController,
+    userPostalCodeController
 }

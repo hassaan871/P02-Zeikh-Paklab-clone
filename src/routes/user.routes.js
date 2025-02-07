@@ -1,9 +1,10 @@
 const {
     userSignupController,
     userLoginController,
-    userAccountInfo,
-    userPhoneNumber,
-    userStreetAddress
+    userAccountInfoController,
+    userPhoneNumberController,
+    userStreetAddressController,
+    userPostalCodeController
 } = require('../controllers/user.controller');
 
 const auth = require('../middlewares/auth.middleware');
@@ -15,8 +16,9 @@ router.post('/register', userSignupController);
 router.post('/login', userLoginController);
 
 // protected routes 
-router.get('/account-info', [auth], userAccountInfo);
-router.post('/phone-number', [auth], userPhoneNumber);
-router.post('/street-address', [auth], userStreetAddress);
+router.get('/account-info', [auth], userAccountInfoController);
+router.post('/phone-number', [auth], userPhoneNumberController);
+router.post('/street-address', [auth], userStreetAddressController);
+router.post('/postal-code', [auth], userPostalCodeController);
 
 module.exports = router;

@@ -29,26 +29,32 @@ const user = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        // min: 11
     },
     address: {
         streetAddress: {
             type: String
         },
         country: {
-            type: String
+            type: String,
+            default: "Pakistan",
+            required: true
         },
         city: {
             type: String
         },
         postalCode: {
             type: String
+        },
+        province: {
+            type: String,
+            enum: ["Punjab", "Sindh", "KPK", "Balochistan", "Gilgit-Baltistan", "Azad-Kashmir"],
+            required: function () { return this.country === "Pakistan" }
         }
     }
 }, { timestamps: true });
 
-user.methods.generateAuthToken = function(){
-    return jwt.sign({_id: this._id}, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
+user.methods.generateAuthToken = function () {
+    return jwt.sign({ _id: this._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
 }
 
 const User = mongoose.model('User', user);
