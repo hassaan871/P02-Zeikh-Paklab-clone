@@ -50,6 +50,11 @@ const user = new mongoose.Schema({
             enum: ["Punjab", "Sindh", "KPK", "Balochistan", "Gilgit-Baltistan", "Azad-Kashmir"],
             required: function () { return this.country === "Pakistan" }
         }
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+        required: true
     }
 }, { timestamps: true });
 
