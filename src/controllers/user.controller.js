@@ -65,49 +65,51 @@ const userLoginController = async (req, res) => {
 }
 
 const forgotPassword = async (req, res) => {
-    try{
-        const {email} = req.body;
-        if(!email) return res.status(400).json({"error":"email is required"});
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ "error": "email is required" });
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if(!emailRegex.test(email)) return res.status(400).json({"error":"invalid email"});
+        if (!emailRegex.test(email)) return res.status(400).json({ "error": "invalid email" });
 
-       // Generates a reset token and set its expiration to 1hr
-       const resetToken = crypto.randomBytes(20).toString('hex');
-       const resetPasswordToken = resetToken;
-       const resetPasswordExpires = Date.now() + 3600000;
-       
-        const user = await User.findOneAndUpdate({ email: email }, {$set: {
-            resetPasswordToken: resetPasswordToken,
-            resetPasswordExpires: resetPasswordExpires
-        }}, {new: true});
-        if(!user) return res.status(404).json({"error": "user not found"});
+        // Generates a reset token and set its expiration to 1hr
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        const resetPasswordToken = resetToken;
+        const resetPasswordExpires = Date.now() + 3600000;
+
+        const user = await User.findOneAndUpdate({ email: email }, {
+            $set: {
+                resetPasswordToken: resetPasswordToken,
+                resetPasswordExpires: resetPasswordExpires
+            }
+        }, { new: true });
+        console.log('user find and updated ', user);
+
+        if (!user) return res.status(404).json({ "error": "user not found" });
 
         //Creates a reset Url
-        let Url;
+        // let Url;
 
-
-        //mail setup
-        const mail  = {
+        const mail = {
             from: process.env.EMAIL_USER,
             to: user.email,
             subject: "Password reset request",
-            text: `Please click the following link ${Url}`
+            text: `Please click the following link `
         };
 
         const transporter = nodemailer.createTransport({
             service: "Gmail",
-            auth:{
+            auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             }
         });
 
         await transporter.sendMail(mail);
-        res.status(200).json({"message": "Password reset email sent"});
+        res.status(200).json({ "message": "Password reset email sent" });
 
-    }catch(error){
-        return res.status(500).json({"error": "Internal server error"});
+    } catch (error) {
+        return res.status(500).json({ "error": "Internal server error", error });
     }
 }
 
