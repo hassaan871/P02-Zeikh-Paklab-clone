@@ -1,6 +1,7 @@
 const {
     userSignupController,
     userLoginController,
+    forgotPassword,
     userAccountInfoController,
     userPhoneNumberController,
     userStreetAddressController,
@@ -16,6 +17,8 @@ const router = express.Router();
 
 router.post('/register', userSignupController);
 router.post('/login', userLoginController);
+router.post('/forget-password', forgotPassword);
+router.post('/reset-password', );
 
 // protected routes 
 router.get('/account-info', [auth], userAccountInfoController);
