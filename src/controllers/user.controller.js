@@ -64,7 +64,7 @@ const userLoginController = async (req, res) => {
     }
 }
 
-const forgotPassword = async (req, res) => {
+const forgetPasswordController = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) return res.status(400).json({ "error": "email is required" });
@@ -230,7 +230,7 @@ const userCityController = async (req, res) => {
 module.exports = {
     userSignupController,
     userLoginController,
-    forgotPassword,
+    forgetPasswordController,
     resetPasswordController,
     userAccountInfoController,
     userPhoneNumberController,

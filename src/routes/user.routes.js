@@ -1,7 +1,7 @@
 const {
     userSignupController,
     userLoginController,
-    forgotPassword,
+    forgetPasswordController,
     resetPasswordController,
     userAccountInfoController,
     userPhoneNumberController,
@@ -18,7 +18,7 @@ const router = express.Router();
 
 router.post('/register', userSignupController);
 router.post('/login', userLoginController);
-router.post('/forget-password', forgotPassword);
+router.post('/forget-password', forgetPasswordController);
 router.post('/reset-password', resetPasswordController);
 
 
