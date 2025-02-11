@@ -2,6 +2,7 @@ const {
     userSignupController,
     userLoginController,
     forgotPassword,
+    resetPasswordController,
     userAccountInfoController,
     userPhoneNumberController,
     userStreetAddressController,
@@ -18,6 +19,7 @@ const router = express.Router();
 router.post('/register', userSignupController);
 router.post('/login', userLoginController);
 router.post('/forget-password', forgotPassword);
+router.post('/reset-password', resetPasswordController);
 
 
 // protected routes 
