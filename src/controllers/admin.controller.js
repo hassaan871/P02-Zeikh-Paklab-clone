@@ -32,15 +32,14 @@ const loginAdmin = async (req, res) => {
 const getAllUsers = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
-        // if(!user.isAdmin) return res.status(401).json({"error":"unauthorized access"});
+        if(!user.isAdmin) return res.status(401).json({"error":"unauthorized access"});
 
         const users = await User.find();
-        // const {password, resetPasswordExpires, resetPasswordToken, ...restData} = users;
-        let result = {};
-        users.forEach(user => {
-            const { password, resetPasswordExpires, resetPasswordToken, ...restUser } = user
-            result.push(restUser);
-        });
+        const result = [];
+        users.map((user)=>{const {password, resetPasswordToken, resetPasswordExpires, ...sanatizedUser} = user._doc;
+        if(!user._doc.superAdmin) result.push(sanatizedUser)});
+        console.log(result);
+        
         return res.status(200).json(result);
 
     } catch (error) {
