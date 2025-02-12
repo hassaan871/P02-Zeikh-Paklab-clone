@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
 
-const loginAdmin = async (req, res) => {
+const loginAdminController = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -29,7 +29,7 @@ const loginAdmin = async (req, res) => {
     }
 }
 
-const getAllUsers = async (req, res) => {
+const getAllUsersController = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
         if(!user.isAdmin) return res.status(401).json({"error":"unauthorized access"});
@@ -49,10 +49,9 @@ const getAllUsers = async (req, res) => {
         };
         return res.status(500).json(result);
     }
-
 }
 
 module.exports = {
-    loginAdmin,
-    getAllUsers
+    loginAdminController,
+    getAllUsersController
 }
