@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const laptop = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
@@ -166,5 +167,5 @@ const laptop = new mongoose.Schema({
 
 }, { timestamps: true });
 
-const Laptop = laptop.model('Laptop', laptop);
+const Laptop = mongoose.model('Laptop', laptop);
 module.exports = Laptop;

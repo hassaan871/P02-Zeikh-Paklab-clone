@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
+const { addLaptopProductController } = require('./product.controller');
 
 const loginAdminController = async (req, res) => {
     try {
@@ -67,7 +68,7 @@ const makeAdminController = async (req, res) => {
 const getAllUsersController = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
-        if (!user.isAdmin) return res.status(401).json({ "error": "unauthorized access" });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
 
         const users = await User.find();
         const result = [];
@@ -82,8 +83,24 @@ const getAllUsersController = async (req, res) => {
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
-            "erro-message": error.message ? error.message : "Internal server error"
+            "error-message": error.message ? error.message : "Internal server error"
         };
+        return res.status(500).json(result);
+    }
+}
+
+const createLaptopProductController = async (req, res) => {
+    try {
+        const user = await User.findOne({_id: req.user.userId});
+        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access."});
+
+        addLaptopProductController(req, res);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
         return res.status(500).json(result);
     }
 }
@@ -91,5 +108,6 @@ const getAllUsersController = async (req, res) => {
 module.exports = {
     loginAdminController,
     makeAdminController,
-    getAllUsersController
+    getAllUsersController,
+    createLaptopProductController
 }
