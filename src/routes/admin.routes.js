@@ -1,5 +1,6 @@
 const {
     loginAdminController,
+    makeAdminController,
     getAllUsersController
 } = require('../controllers/admin.controller');
 
@@ -12,5 +13,6 @@ router.post('/login-admin', loginAdminController);
 
 //protected routes
 router.get('/get-all-users', [auth], getAllUsersController);
+router.post('/make-admin', [auth], makeAdminController);
 
 module.exports = router;

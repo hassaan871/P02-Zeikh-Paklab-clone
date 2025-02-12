@@ -27,6 +27,10 @@ const user = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    superAdmin: {
+        type: Boolean,
+        default: false
+    },
     phoneNumber: {
         type: String,
     },
