@@ -46,7 +46,7 @@ const addSmartWatchProductController = async (req, res) => {
         });
 
         return res.status(201).json(smartwatch);
-        
+
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",

@@ -108,7 +108,7 @@ const createLaptopProductController = async (req, res) => {
 
 const createSmartWatchProductController = async (req, res) => {
     try {
-        const user = await User.findOne({_id: req.user.user.Id});
+        const user = await User.findOne({_id: req.user.userId});
         if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access."});
 
         addSmartWatchProductController(req, res);
