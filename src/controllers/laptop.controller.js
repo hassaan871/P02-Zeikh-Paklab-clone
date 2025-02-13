@@ -120,6 +120,8 @@ const addLaptopProductController = async (req, res) => {
     }
 }
 
+
+
 module.exports = {
     addLaptopProductController
 }

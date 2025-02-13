@@ -1,7 +1,7 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
-const { addLaptopProductController } = require('./product.controller');
+const { addLaptopProductController } = require('./laptop.controller');
 
 const loginAdminController = async (req, res) => {
     try {
