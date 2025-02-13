@@ -62,5 +62,5 @@ const smartwatch = new mongoose.Schema({
     }
 });
 
-const Smartwatch = mongoose.model('laptop', laptop);
+const Smartwatch = mongoose.model('Smartwatch', smartwatch);
 module.exports = Smartwatch;
