@@ -43,7 +43,7 @@ const smartwatch = new mongoose.Schema({
         color: {
             type: String
         },
-        Warranty: {
+        warranty: {
             type: String,
             requried: true,
             deafult: "No"
