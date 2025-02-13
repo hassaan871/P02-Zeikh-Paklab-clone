@@ -163,6 +163,11 @@ const laptop = new mongoose.Schema({
     details: {
         type: String,
         required: true
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        default: 1
     }
 
 }, { timestamps: true });
