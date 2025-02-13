@@ -14,6 +14,11 @@ const laptop = new mongoose.Schema({
         type: Number,
         required : true
     },
+    gamingLaptop: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     specifications: {
         brand:{
             type: String,
@@ -167,7 +172,6 @@ const laptop = new mongoose.Schema({
     quantity: {
         type: Number,
         required: true,
-        default: 1
     }
 
 }, { timestamps: true });

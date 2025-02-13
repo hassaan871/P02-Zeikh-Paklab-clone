@@ -6,6 +6,7 @@ const addLaptopProductController = async (req, res) => {
             name,
             description,
             price,
+            gamingLaptop,
             specifications: {
                 brand,
                 generation,
@@ -51,7 +52,8 @@ const addLaptopProductController = async (req, res) => {
                 productPage,
                 warranty
             },
-            details
+            details,
+            quantity
         } = req.body;
 
         const existingLaptop = await Laptop.findOne({name});
@@ -61,6 +63,7 @@ const addLaptopProductController = async (req, res) => {
             name,
             description,
             price,
+            gamingLaptop,
             specifications: {
                 brand,
                 generation,
@@ -106,7 +109,8 @@ const addLaptopProductController = async (req, res) => {
                 productPage,
                 warranty
             },
-            details
+            details,
+            quantity
         });
 
         return res.status(201).json(laptop);
