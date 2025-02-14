@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const laptop = new mongoose.Schema({
     image: {
         type: String, //cloudinary url
-        required: true
+        // required: true
     },
     name: {
         type: String,

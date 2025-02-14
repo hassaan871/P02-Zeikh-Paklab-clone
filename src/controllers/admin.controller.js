@@ -1,8 +1,8 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
-const { addLaptopProductController } = require('./laptop.controller');
-const { addSmartWatchProductController } = require('./smartwatch.controller');
+const { addLaptopProductController, addLaptopImageController } = require('./laptop.controller');
+const { addSmartWatchProductController, addSmartWatchImageController } = require('./smartwatch.controller');
 
 const loginAdminController = async (req, res) => {
     try {
@@ -92,8 +92,8 @@ const getAllUsersController = async (req, res) => {
 
 const createLaptopProductController = async (req, res) => {
     try {
-        const user = await User.findOne({_id: req.user.userId});
-        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access."});
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
 
         addLaptopProductController(req, res);
 
@@ -106,13 +106,45 @@ const createLaptopProductController = async (req, res) => {
     }
 }
 
+const uploadLaptopImageController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        addLaptopImageController(req, res);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 const createSmartWatchProductController = async (req, res) => {
     try {
-        const user = await User.findOne({_id: req.user.userId});
-        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access."});
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
 
         addSmartWatchProductController(req, res);
-        
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const uploadSmartWatchImageController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        addSmartWatchImageController(req, res);
+
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -127,5 +159,7 @@ module.exports = {
     makeAdminController,
     getAllUsersController,
     createLaptopProductController,
-    createSmartWatchProductController
+    uploadLaptopImageController,
+    createSmartWatchProductController,
+    uploadSmartWatchImageController
 }

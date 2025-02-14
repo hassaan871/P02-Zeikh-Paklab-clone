@@ -11,6 +11,7 @@
   "description": "Internship 2nd project paklab e-commerce store backend clone",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cloudinary": "^2.5.1",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
