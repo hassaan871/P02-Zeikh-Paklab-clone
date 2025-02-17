@@ -1,4 +1,5 @@
 const Laptop = require('../models/laptop.model');
+const { uploadOnCloudinary } = require('../utils/cloudinary.util');
 
 const addLaptopProductController = async (req, res) => {
     try {
@@ -124,9 +125,16 @@ const addLaptopProductController = async (req, res) => {
     }
 }
 
-const addLaptopImageController = (req, res) => {
+const addLaptopImageController = async (req, res) => {
     try {
+        if(!req.file) return res.status(400).json({"error": "file not provided to be uploaded"});
+        if(!req.body.laptopId) return res.status(400).json({"error": "Laptop id not provided"});
 
+        const upload = await uploadOnCloudinary(req.file.path);
+        const laptop = await Laptop.findOneAndUpdate({_id:req.body.laptopId}, {$set: {"image": upload.url}});
+        if(!laptop) return res.status(404).json({"error":"Laptop not found"});
+
+        return res.status(200).json({"success": "Image uploaded successfully", laptop});
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",

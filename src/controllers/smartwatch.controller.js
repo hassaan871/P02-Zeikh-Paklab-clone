@@ -1,4 +1,5 @@
 const Smartwatch = require('../models/smartwatch.model');
+const { uploadOnCloudinary } = require('../utils/cloudinary.util');
 
 const addSmartWatchProductController = async (req, res) => {
     try {
@@ -56,9 +57,16 @@ const addSmartWatchProductController = async (req, res) => {
     }
 }
 
-const addSmartWatchImageController = (req, res) => {
+const addSmartWatchImageController = async (req, res) => {
     try {
-        
+        if(!req.file) return res.status(400).json({"error": "file not provided to be uplaoded"});
+        if(!req.body.smartwatchId) return res.status(400).json({"error": "smartwatch id not provided"});
+
+        const upload = await uploadOnCloudinary(req.file.path);
+        const smartwatch = await Smartwatch.findOneAndUpdate({_id:req.body.smartwatchId}, {$set: {"image":upload.url}});
+        if(!smartwatch) return res.status(404).json({"error": "smartwatch not found"});
+
+        return res.status(200).json({"success": "Image uploaded successfully", smartwatch});   
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",

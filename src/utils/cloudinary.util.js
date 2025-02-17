@@ -10,11 +10,11 @@ v2.config({
 const uploadOnCloudinary = async (localFilePath) => {
     try {
         if(!localFilePath) return null;
-        const upload = await cloudinay.uploader.upload(localFilePath, { resource_type: "auto"});
-        fs.unlink(localFilePath);
+        const upload = await v2.uploader.upload(localFilePath, { resource_type: "auto"});
+        fs.unlinkSync(localFilePath);
         return upload;
     } catch (error) {
-        fs.unlink(localFilePath);
+        fs.unlinkSync(localFilePath);
         console.error(error);
         return null;
     }
