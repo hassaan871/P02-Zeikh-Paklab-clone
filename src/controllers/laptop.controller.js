@@ -163,11 +163,41 @@ const searchLaptopController = async (req, res) => {
     try {
         const { name } = req.body;
         if (!name) return res.status(400).json({ "error": "must required laptop name to be searched" });
-        
+
         const laptop = await Laptop.findOne({ name });
-        if(!laptop) return res.status(404).json({"error": "no laptop found"});
+        if (!laptop) return res.status(404).json({ "error": "no laptop found" });
 
         return res.status(200).json(laptop);
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const getAllNewLaptopsController = async (req, res) => {
+    try {
+        const newLaptops = await Laptop.find({ "specifications.condition": "new" });
+        if (!newLaptops) return res.status(404).json({ "message": "no new laptop found" });
+
+        return res.status(200).json(newLaptops);
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const getAllUsedLaptopsController = async (req, res) => {
+    try {
+        const usedLaptops = await Laptop.find({ "specifications.condition": "used" });
+        if (!usedLaptops) return res.status(404).json({ "message": "no used laptop found" });
+
+        return res.status(200).json(usedLaptops);
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -181,5 +211,7 @@ module.exports = {
     addLaptopProductController,
     addLaptopImageController,
     getAllLaptopsController,
-    searchLaptopController
+    searchLaptopController,
+    getAllNewLaptopsController,
+    getAllUsedLaptopsController
 }
