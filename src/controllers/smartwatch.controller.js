@@ -59,14 +59,29 @@ const addSmartWatchProductController = async (req, res) => {
 
 const addSmartWatchImageController = async (req, res) => {
     try {
-        if(!req.file) return res.status(400).json({"error": "file not provided to be uplaoded"});
-        if(!req.body.smartwatchId) return res.status(400).json({"error": "smartwatch id not provided"});
+        if (!req.file) return res.status(400).json({ "error": "file not provided to be uplaoded" });
+        if (!req.body.smartwatchId) return res.status(400).json({ "error": "smartwatch id not provided" });
 
         const upload = await uploadOnCloudinary(req.file.path);
-        const smartwatch = await Smartwatch.findOneAndUpdate({_id:req.body.smartwatchId}, {$set: {"image":upload.url}});
-        if(!smartwatch) return res.status(404).json({"error": "smartwatch not found"});
+        const smartwatch = await Smartwatch.findOneAndUpdate({ _id: req.body.smartwatchId }, { $set: { "image": upload.url } });
+        if (!smartwatch) return res.status(404).json({ "error": "smartwatch not found" });
 
-        return res.status(200).json({"success": "Image uploaded successfully", smartwatch});   
+        return res.status(200).json({ "success": "Image uploaded successfully", smartwatch });
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const getAllSmartWatches = async (req, res) => {
+    try {
+        const smartwatches = await Smartwatch.find();
+        if(!smartwatches) return res.status(404).json(smartwatches);
+
+        return res.status(200).json(smartwatches);
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -78,5 +93,6 @@ const addSmartWatchImageController = async (req, res) => {
 
 module.exports = {
     addSmartWatchProductController,
-    addSmartWatchImageController
+    addSmartWatchImageController,
+    getAllSmartWatches
 }
