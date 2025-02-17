@@ -76,7 +76,7 @@ const addSmartWatchImageController = async (req, res) => {
     }
 }
 
-const getAllSmartWatches = async (req, res) => {
+const getAllSmartWatchesController = async (req, res) => {
     try {
         const smartwatches = await Smartwatch.find();
         if(!smartwatches) return res.status(404).json(smartwatches);
@@ -91,8 +91,27 @@ const getAllSmartWatches = async (req, res) => {
     }
 }
 
+const searchSmartwatchController = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ "error": "must required smartwatch name to be searched" });
+        
+        const smartwatch = await Smartwatch.findOne({ name });
+        if(!smartwatch) return res.status(404).json({"error": "no smartwatch found"});
+
+        return res.status(200).json(smartwatch);
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 module.exports = {
     addSmartWatchProductController,
     addSmartWatchImageController,
-    getAllSmartWatches
+    getAllSmartWatchesController,
+    searchSmartwatchController
 }

@@ -127,14 +127,14 @@ const addLaptopProductController = async (req, res) => {
 
 const addLaptopImageController = async (req, res) => {
     try {
-        if(!req.file) return res.status(400).json({"error": "file not provided to be uploaded"});
-        if(!req.body.laptopId) return res.status(400).json({"error": "Laptop id not provided"});
+        if (!req.file) return res.status(400).json({ "error": "file not provided to be uploaded" });
+        if (!req.body.laptopId) return res.status(400).json({ "error": "Laptop id not provided" });
 
         const upload = await uploadOnCloudinary(req.file.path);
-        const laptop = await Laptop.findOneAndUpdate({_id:req.body.laptopId}, {$set: {"image": upload.url}});
-        if(!laptop) return res.status(404).json({"error":"Laptop not found"});
+        const laptop = await Laptop.findOneAndUpdate({ _id: req.body.laptopId }, { $set: { "image": upload.url } });
+        if (!laptop) return res.status(404).json({ "error": "Laptop not found" });
 
-        return res.status(200).json({"success": "Image uploaded successfully", laptop});
+        return res.status(200).json({ "success": "Image uploaded successfully", laptop });
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -144,15 +144,33 @@ const addLaptopImageController = async (req, res) => {
     }
 }
 
-const getAllLaptops = async (req, res) => {
+const getAllLaptopsController = async (req, res) => {
     try {
         const laptops = await Laptop.find();
-        if(!laptops) return res.status(404).json({"error": "no laptop found"});
+        if (!laptops) return res.status(404).json({ "error": "no laptop found" });
 
         return res.status(200).json(laptops);
     } catch (error) {
         const result = {
-             "error-code": error.code ? error.code : "no error code",
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const searchLaptopController = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ "error": "must required laptop name to be searched" });
+        
+        const laptop = await Laptop.findOne({ name });
+        if(!laptop) return res.status(404).json({"error": "no laptop found"});
+
+        return res.status(200).json(laptop);
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
             "error-message": error.message ? error.message : "Internal server error"
         }
         return res.status(500).json(result);
@@ -162,5 +180,6 @@ const getAllLaptops = async (req, res) => {
 module.exports = {
     addLaptopProductController,
     addLaptopImageController,
-    getAllLaptops
+    getAllLaptopsController,
+    searchLaptopController
 }
