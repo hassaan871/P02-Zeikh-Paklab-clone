@@ -7,6 +7,7 @@ const {
     createSmartWatchProductController,
     uploadSmartWatchImageController
 } = require('../controllers/admin.controller');
+
 const { upload } = require('../middlewares/multer.middleware');
 
 const auth = require('../middlewares/auth.middleware');

@@ -21,7 +21,6 @@ router.post('/login', userLoginController);
 router.post('/forget-password', forgetPasswordController);
 router.post('/reset-password', resetPasswordController);
 
-
 // protected routes 
 router.get('/account-info', [auth], userAccountInfoController);
 router.post('/phone-number', [auth], userPhoneNumberController);

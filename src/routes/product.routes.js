@@ -1,5 +1,14 @@
-const { getAllLaptopsController, searchLaptopController, getAllUsedLaptopsController, getAllNewLaptopsController } = require('../controllers/laptop.controller');
-const { getAllSmartWatchesController, searchSmartwatchController } = require('../controllers/smartwatch.controller');
+const {
+    getAllLaptopsController,
+    searchLaptopController,
+    getAllUsedLaptopsController,
+    getAllNewLaptopsController
+} = require('../controllers/laptop.controller');
+
+const {
+    getAllSmartWatchesController,
+    searchSmartwatchController
+} = require('../controllers/smartwatch.controller');
 
 const express = require('express');
 const router = express.Router();
