@@ -22,6 +22,7 @@ const addToCartController = async (req, res) => {
                     quantity: laptopQnty
                 });
             }
+            cart.product.type = "Laptop";
         }
 
         if (smartwatchId) {
@@ -34,6 +35,7 @@ const addToCartController = async (req, res) => {
                     quantity: smartwatchQnty
                 });
             }
+            cart.product.type = "Smartwatch";
         }
 
         await cart.save();
@@ -104,6 +106,11 @@ const deleteFromCartController = async (req, res) => {
 
 const getCartController = async (req, res) => {
     try {
+        const {userId} = req.user;
+        const user = await Cart.findOne({ userId });
+
+
+
         
     } catch (error) {
         const result = {
