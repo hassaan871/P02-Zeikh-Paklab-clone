@@ -2,33 +2,33 @@ const Cart = require('../models/cart.model');
 
 const addToCartController = async (req, res) => {
     try {
-        const {laptopId, smartwatchId, laptopQnty, smartwatchQnty} = req.body;
-        if( !laptopId && !smartwatchId) return res.status(400).json({"error":"Nothing to add in cart"});
+        const { laptopId, smartwatchId, laptopQnty, smartwatchQnty } = req.body;
+        if (!laptopId && !smartwatchId) return res.status(400).json({ "error": "Nothing to add in cart" });
 
         let cart = await Cart.findOne({
             userId: req.user.userId
         });
-        if(!cart) cart = await Cart.create({userId: req.user.userId, product: []});
+        if (!cart) cart = await Cart.create({ userId: req.user.userId, product: [] });
 
         if (cart.product === null) cart.product = [];
-        
-        if(laptopId){
+
+        if (laptopId) {
             const existingLaptop = cart.product.find(product => product.itemId.toString() === laptopId);
-            if( existingLaptop ){
+            if (existingLaptop) {
                 existingLaptop.quantity += laptopQnty;
             } else {
                 cart.product.push({
                     itemId: laptopId,
                     quantity: laptopQnty
                 });
-            }     
+            }
         }
 
-        if (smartwatchId){
+        if (smartwatchId) {
             const existingSmartWatch = cart.product.find(product => product.itemId.toString() === smartwatchId);
-            if( existingSmartWatch ){
+            if (existingSmartWatch) {
                 existingSmartWatch.quantity += smartwatchQnty;
-            }else{
+            } else {
                 cart.product.push({
                     itemId: smartwatchId,
                     quantity: smartwatchQnty
@@ -37,8 +37,8 @@ const addToCartController = async (req, res) => {
         }
 
         await cart.save();
-        return res.status(201).json({"success": "Item added to cart", cart});
-    
+        return res.status(201).json({ "success": "Item added to cart", cart });
+
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -50,7 +50,49 @@ const addToCartController = async (req, res) => {
 
 const deleteFromCartController = async (req, res) => {
     try {
-        
+        const { laptopId, smartwatchId, laptopQnty, smartwatchQnty } = req.body;
+        if (!laptopId && !smartwatchId) return res.status(400).json({ "error": "Need product id(laptopId or smartwatchId) to delete from the cart" });
+
+        const cart = await Cart.findOne({
+            userId: req.user.userId
+        });
+        if (cart.product === null) return res.status(404).json({ "error": "no product found. Cart is already empty" });
+
+        if (laptopId) {
+            const existingLaptop = cart.product.find(product => product.itemId.toString() === laptopId);
+            if (existingLaptop) {
+                if(existingLaptop.quantity-laptopQnty < 0){
+                    return res.status(400).json({"error":"you cannot delete more than in your cart"});
+                }else{
+                    existingLaptop.quantity -= laptopQnty;
+                    if(existingLaptop.quantity === 0){
+                        cart.product = cart.product.filter(product => product.itemId.toString !== laptopId);
+                    }
+                }
+            } else {
+                return res.status(400).json({"error": "Laptop not found. Invalid Laptop ID"});
+            }
+        }
+
+        if (smartwatchId) {
+            const existingSmartWatch = cart.product.find(product => product.itemId.toString() === smartwatchId);
+            if (existingSmartWatch) {
+                if(existingSmartWatch.quantity-smartwatchQnty < 0){
+                    return res.status(400).json({"error":"you cannot delete more than in your cart"});
+                }else{
+                    existingSmartWatch.quantity -= smartwatchQnty;
+                    if(existingSmartWatch.quantity === 0){
+                        cart.product = cart.product.filter(product => product.itemId.toString !== smartwatchId);
+                    }
+                }
+            } else {
+                return res.status(400).json({"error": "Smartwatch not found. Invalid SmartWatch ID"});
+            }
+        }
+
+        await cart.save();
+        return res.status(201).json({ "success": "Item removed from the cart", cart });
+
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
