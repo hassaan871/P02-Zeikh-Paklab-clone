@@ -15,9 +15,9 @@ const cartSchema = new mongoose.Schema({
                 },
                 quantity: {
                     type: Number,
-                    required: true
+                    required: true,
+                    default: 1
                 }
-
             },
             {
                 smartwatch: {
@@ -26,7 +26,8 @@ const cartSchema = new mongoose.Schema({
                 },
                 quantity: {
                     type: Number,
-                    required: true
+                    required: true,
+                    default: 1
                 }
             }
         ]

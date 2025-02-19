@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const { validateUser, validateLoginUser } = require('../validations/user.validations');
+const { createCart } = require('../utils/createCart.util');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
@@ -28,6 +29,9 @@ const userSignupController = async (req, res) => {
 
         const data = user.toObject();
         delete data.password;
+
+        const cart = await createCart(user._id);
+        if(!cart) console.error("Cart not created", cart);
 
         return res.status(201).header("x-auth-token", token).json(data);
 
