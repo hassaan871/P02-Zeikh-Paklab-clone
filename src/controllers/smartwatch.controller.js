@@ -109,9 +109,26 @@ const searchSmartwatchController = async (req, res) => {
     }
 }
 
+const softDeleteSmartwatchController = async (req, res) => {
+    try {
+        const smartwatch = await Smartwatch.findOneAndUpdate({"_id": req.body.smartwatchId}, { $set: {isDeleted: true}},{new: true});
+        if(!smartwatch) return res.status(404).json({"error": "Smartwatch not found. Invalid smartwatchId"});
+
+        return res.status(200).json({"success": "Smartwatch softly deleted", smartwatch});
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 module.exports = {
     addSmartWatchProductController,
     addSmartWatchImageController,
     getAllSmartWatchesController,
-    searchSmartwatchController
+    searchSmartwatchController,
+    softDeleteSmartwatchController
 }

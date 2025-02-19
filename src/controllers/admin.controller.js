@@ -1,8 +1,8 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
-const { addLaptopProductController, addLaptopImageController } = require('./laptop.controller');
-const { addSmartWatchProductController, addSmartWatchImageController } = require('./smartwatch.controller');
+const { addLaptopProductController, addLaptopImageController, softDeleteLaptopController } = require('./laptop.controller');
+const { addSmartWatchProductController, addSmartWatchImageController, softDeleteSmartwatchController } = require('./smartwatch.controller');
 
 const loginAdminController = async (req, res) => {
     try {
@@ -154,6 +154,38 @@ const uploadSmartWatchImageController = async (req, res) => {
     }
 }
 
+const deleteLaptopController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access. "});
+
+        await softDeleteLaptopController(req, res);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const deleteSmartwatchController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access. "});
+
+        await softDeleteSmartwatchController(req, res);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result); 
+    }
+}
+
 module.exports = {
     loginAdminController,
     makeAdminController,
@@ -161,5 +193,7 @@ module.exports = {
     createLaptopProductController,
     uploadLaptopImageController,
     createSmartWatchProductController,
-    uploadSmartWatchImageController
+    uploadSmartWatchImageController,
+    deleteLaptopController,
+    deleteSmartwatchController
 }

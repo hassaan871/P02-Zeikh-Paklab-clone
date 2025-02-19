@@ -207,11 +207,28 @@ const getAllUsedLaptopsController = async (req, res) => {
     }
 }
 
+const softDeleteLaptopController = async (req, res) => {
+    try {
+        const laptop = await Laptop.findOneAndUpdate({"_id": req.body.laptopId}, { $set: {isDeleted: true}},{new: true});
+        if(!laptop) return res.status(404).json({"error": "Laptop not found. Invalid LaptopId"});
+
+        return res.status(200).json({"success": "Laptop softly deleted", laptop});
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 module.exports = {
     addLaptopProductController,
     addLaptopImageController,
     getAllLaptopsController,
     searchLaptopController,
     getAllNewLaptopsController,
-    getAllUsedLaptopsController
+    getAllUsedLaptopsController,
+    softDeleteLaptopController
 }
