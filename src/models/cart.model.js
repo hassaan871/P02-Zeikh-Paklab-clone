@@ -8,7 +8,7 @@ const cartSchema = new mongoose.Schema({
     },
     product: [
         {
-            laptop: {
+            itemId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Laptop'
             },
@@ -18,17 +18,7 @@ const cartSchema = new mongoose.Schema({
                 default: 1
             }
         },
-        {
-            smartwatch: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Smartwatch'
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                default: 1
-            }
-        }]
+        ]
 }, { timestamps: true });
 
 const Cart = mongoose.model('Cart', cartSchema);
