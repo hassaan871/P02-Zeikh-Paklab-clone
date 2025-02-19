@@ -176,6 +176,11 @@ const laptop = new mongoose.Schema({
     quantity: {
         type: Number,
         required: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 
 }, { timestamps: true });
