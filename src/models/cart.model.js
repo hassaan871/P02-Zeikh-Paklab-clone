@@ -6,32 +6,29 @@ const cartSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    items: [{
-        product: [
-            {
-                laptop: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Laptop'
-                },
-                quantity: {
-                    type: Number,
-                    required: true,
-                    default: 1
-                }
+    product: [
+        {
+            laptop: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Laptop'
             },
-            {
-                smartwatch: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Smartwatch'
-                },
-                quantity: {
-                    type: Number,
-                    required: true,
-                    default: 1
-                }
+            quantity: {
+                type: Number,
+                required: true,
+                default: 1
             }
-        ]
-    }]
+        },
+        {
+            smartwatch: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Smartwatch'
+            },
+            quantity: {
+                type: Number,
+                required: true,
+                default: 1
+            }
+        }]
 }, { timestamps: true });
 
 const Cart = mongoose.model('Cart', cartSchema);
