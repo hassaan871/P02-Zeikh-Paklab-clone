@@ -12,7 +12,8 @@ const {
     getAllCanceledOrdersController,
     getAllDeliveredOrdersController,
     getAllShippedOrdersController,
-    getAllPendingOrdersController
+    getAllPendingOrdersController,
+    getAllProcessingOrdersController
 } = require('../controllers/admin.controller');
 
 const { upload } = require('../middlewares/multer.middleware');
@@ -38,5 +39,6 @@ router.get('/get-all-canceled-orders', [auth], getAllCanceledOrdersController);
 router.get('/get-all-delivered-orders', [auth], getAllDeliveredOrdersController);
 router.get('/get-all-shipped-orders', [auth], getAllShippedOrdersController);
 router.get('/get-all-pending-orders', [auth], getAllPendingOrdersController);
+router.get('/get-all-processing-orders', [auth], getAllProcessingOrdersController);
 
 module.exports = router;
