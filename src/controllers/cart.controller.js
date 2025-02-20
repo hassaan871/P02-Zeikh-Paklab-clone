@@ -1,4 +1,6 @@
 const Cart = require('../models/cart.model');
+const Laptop = require('../models/laptop.model');
+const SmartWatch = require('../models/smartwatch.model');
 
 const addToCartController = async (req, res) => {
     try {
@@ -19,10 +21,10 @@ const addToCartController = async (req, res) => {
             } else {
                 cart.product.push({
                     itemId: laptopId,
-                    quantity: laptopQnty
+                    quantity: laptopQnty,
+                    category: "Laptop"
                 });
             }
-            cart.product.type = "Laptop";
         }
 
         if (smartwatchId) {
@@ -32,10 +34,10 @@ const addToCartController = async (req, res) => {
             } else {
                 cart.product.push({
                     itemId: smartwatchId,
-                    quantity: smartwatchQnty
+                    quantity: smartwatchQnty,
+                    category: "Smartwatch"
                 });
             }
-            cart.product.type = "Smartwatch";
         }
 
         await cart.save();
@@ -107,11 +109,39 @@ const deleteFromCartController = async (req, res) => {
 const getCartController = async (req, res) => {
     try {
         const {userId} = req.user;
-        const user = await Cart.findOne({ userId });
 
+        const cart = await Cart.findOne({ userId });
+        if(!cart) return res.status(404).json({"error": "cart of the user not found."});
 
-
-        
+        let result = [];
+        for (const item of cart.product) {
+                if(item.category === 'Laptop'){
+                    const laptop = await Laptop.findById(item.itemId);
+                    // console.log("Laptop", laptop);
+                    
+                    const product = {
+                        "item-name": laptop.name,
+                        "quanity": item.quantity,
+                        "item-price": laptop.price,
+                        "total-price": laptop.price*item.quantity
+                    }
+                    result.push(product);
+                }
+                if(item.category === 'Smartwatch'){
+                    const smartwatch = await SmartWatch.findById(item.itemId);
+                    // console.log("Smartwatch", smartwatch);
+                    
+                    const product = {
+                        "item-name": smartwatch.name,
+                        "quantity": item.quantity,
+                        "item-price": smartwatch.price,
+                        "total-price": smartwatch.price*item.quantity
+                    }
+                    result.push(product);
+                }
+            }
+            
+        return res.status(200).json({cart: result });        
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
