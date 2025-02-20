@@ -71,10 +71,12 @@ const confirmOrderController = async (req, res) => {
 
         const order = await Order.create({
             userId,
+            product: cart.product,
             totalAmount: cart.totalAmount,
             paymentStatus: paymentMethod,
             orderStatus: "processing"
         });
+
         return res.status(201).json({"success": "Order placed successfully", order});
     } catch (error) {
         const result = {
@@ -87,6 +89,7 @@ const confirmOrderController = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
     try {
+
         
     } catch (error) {
         const result = {
