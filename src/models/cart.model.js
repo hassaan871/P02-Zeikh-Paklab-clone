@@ -10,20 +10,21 @@ const cartSchema = new mongoose.Schema({
         {
             itemId: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Laptop'
+                required: true,
+                refPath: 'product.category'
             },
             quantity: {
                 type: Number,
                 required: true,
                 default: 1
             },
-            type: {
+            category: {
                 type: String,
                 require: true,
                 enum: ['Laptop', 'Smartwatch']
             }
         },
-        ]
+    ]
 }, { timestamps: true });
 
 const Cart = mongoose.model('Cart', cartSchema);
