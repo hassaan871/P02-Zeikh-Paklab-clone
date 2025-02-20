@@ -7,7 +7,8 @@ const {
     createSmartWatchProductController,
     uploadSmartWatchImageController,
     deleteLaptopController,
-    deleteSmartwatchController
+    deleteSmartwatchController,
+    getAllOrdersController
 } = require('../controllers/admin.controller');
 
 const { upload } = require('../middlewares/multer.middleware');
@@ -28,5 +29,6 @@ router.post('/upload-laptop-image', [auth, upload.single("laptop-image")],  uplo
 router.post('/upload-smartwatch-image', [auth, upload.single("smartwatch-image")], uploadSmartWatchImageController);
 router.post('/delete-laptop', [auth], deleteLaptopController);
 router.post('/delete-smartwatch', [auth], deleteSmartwatchController);
+router.get('/get-all-orders', [auth], getAllOrdersController);
 
 module.exports = router;
