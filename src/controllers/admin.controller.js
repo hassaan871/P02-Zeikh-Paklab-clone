@@ -2,8 +2,16 @@ const User = require('../models/user.model');
 const Order = require('../models/order.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
-const { addLaptopProductController, addLaptopImageController, softDeleteLaptopController } = require('./laptop.controller');
-const { addSmartWatchProductController, addSmartWatchImageController, softDeleteSmartwatchController } = require('./smartwatch.controller');
+const {
+    addLaptopProductController,
+    addLaptopImageController,
+    softDeleteLaptopController
+} = require('./laptop.controller');
+const {
+    addSmartWatchProductController,
+    addSmartWatchImageController,
+    softDeleteSmartwatchController
+} = require('./smartwatch.controller');
 
 const loginAdminController = async (req, res) => {
     try {
@@ -158,7 +166,7 @@ const uploadSmartWatchImageController = async (req, res) => {
 const deleteLaptopController = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
-        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access. "});
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access. " });
 
         await softDeleteLaptopController(req, res);
 
@@ -174,7 +182,7 @@ const deleteLaptopController = async (req, res) => {
 const deleteSmartwatchController = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
-        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access. "});
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access. " });
 
         await softDeleteSmartwatchController(req, res);
 
@@ -183,24 +191,45 @@ const deleteSmartwatchController = async (req, res) => {
             "error-code": error.code ? error.code : "no error code",
             "error-message": error.message ? error.message : "Internal server error"
         }
-        return res.status(500).json(result); 
+        return res.status(500).json(result);
     }
 }
 
 const getAllOrdersController = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
-        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access. "});
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
 
-        const order = await Order.find();
-        return res.status(200).json(order);
-                
+        const allOrders = await Order.find();
+        if(!allOrders) return res.status(404).json({"error": "not a single order"});
+
+        return res.status(200).json(allOrders);
+
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
             "error-message": error.message ? error.message : "Internal server error"
         }
-        return res.status(500).json(result); 
+        return res.status(500).json(result);
+    }
+}
+
+const getAllCanceledOrders = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        const canceledOrders = await Order.find({orderStatus: "canceled"});
+        if(!canceledOrders) return res.status(404).json({"error":"not a single Canceled order"});
+
+        return res.status(200).json(canceledOrders);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
     }
 }
 
@@ -214,5 +243,6 @@ module.exports = {
     uploadSmartWatchImageController,
     deleteLaptopController,
     deleteSmartwatchController,
-    getAllOrdersController
+    getAllOrdersController,
+    getAllCanceledOrders
 }
