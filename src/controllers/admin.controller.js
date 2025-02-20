@@ -252,6 +252,44 @@ const getAllDeliveredOrdersController = async (req, res) => {
     }
 }
 
+const getAllShippedOrdersController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        const shippedOrders = await Order.find({orderStatus: "shipped"});
+        if(!shippedOrders) return res.status(404).json({"error":"not a single order shipped"});
+
+        return res.status(200).json(shippedOrders);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const getAllPendingOrdersController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        const pendingOrders = await Order.find({orderStatus: "pending"});
+        if(!pendingOrders) return res.status(404).json({"error":"not a single pending order"});
+
+        return res.status(200).json(pendingOrders);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 module.exports = {
     loginAdminController,
     makeAdminController,
@@ -264,5 +302,7 @@ module.exports = {
     deleteSmartwatchController,
     getAllOrdersController,
     getAllCanceledOrdersController,
-    getAllDeliveredOrdersController
+    getAllDeliveredOrdersController,
+    getAllShippedOrdersController,
+    getAllPendingOrdersController
 }

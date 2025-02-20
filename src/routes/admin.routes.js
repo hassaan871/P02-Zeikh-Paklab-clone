@@ -10,7 +10,9 @@ const {
     deleteSmartwatchController,
     getAllOrdersController,
     getAllCanceledOrdersController,
-    getAllDeliveredOrdersController
+    getAllDeliveredOrdersController,
+    getAllShippedOrdersController,
+    getAllPendingOrdersController
 } = require('../controllers/admin.controller');
 
 const { upload } = require('../middlewares/multer.middleware');
@@ -34,5 +36,7 @@ router.post('/delete-smartwatch', [auth], deleteSmartwatchController);
 router.get('/get-all-orders', [auth], getAllOrdersController);
 router.get('/get-all-canceled-orders', [auth], getAllCanceledOrdersController);
 router.get('/get-all-delivered-orders', [auth], getAllDeliveredOrdersController);
+router.get('/get-all-shipped-orders', [auth], getAllShippedOrdersController);
+router.get('/get-all-pending-orders', [auth], getAllPendingOrdersController);
 
 module.exports = router;
