@@ -24,7 +24,11 @@ const cartSchema = new mongoose.Schema({
                 enum: ['Laptop', 'Smartwatch']
             }
         },
-    ]
+    ],
+    totalAmount: {
+        type: Number,
+        required: true
+    }
 }, { timestamps: true });
 
 const Cart = mongoose.model('Cart', cartSchema);

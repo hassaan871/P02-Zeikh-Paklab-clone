@@ -2,8 +2,9 @@ const User = require('../models/user.model');
 const Cart = require('../models/cart.model');
 const Laptop = require('../models/laptop.model');
 const SmartWatch = require('../models/smartwatch.model');
+const Order = require('../models/order.model');
 
-const checkout = async (req, res) => {
+const checkoutContoller = async (req, res) => {
     try {
         const {userId} = req.user;
         const user = await User.findById(userId);   
@@ -45,6 +46,8 @@ const checkout = async (req, res) => {
                     result.push(product);
                 }
             }
+            cart.totalAmount = totalBill;
+            await cart.save();
             result.push({totalBill});                
             return res.status(200).json(result);
             
@@ -57,6 +60,32 @@ const checkout = async (req, res) => {
     }
 }
 
+const confirmOrderController = async (req, res) => {
+    try {
+        const {userId} = req.user;
+
+        const {paymentMethod} = req.body;
+        if(!paymentMethod) return res.status(400).json({"error": "paymentMethod is required"});
+
+        const cart = await Cart.findOne({userId});
+
+        const order = await Order.create({
+            userId,
+            totalAmount: cart.totalAmount,
+            paymentStatus: paymentMethod,
+            orderStatus: "processing"
+        });
+        return res.status(201).json({"success": "Order placed successfully", order});
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result); 
+    }
+}
+
 module.exports = {
-    checkout
+    checkoutContoller,
+    confirmOrderController
 }
