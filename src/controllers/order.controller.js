@@ -85,7 +85,20 @@ const confirmOrderController = async (req, res) => {
     }
 }
 
+const cancelOrder = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 module.exports = {
     checkoutContoller,
-    confirmOrderController
+    confirmOrderController,
+    cancelOrder
 }
