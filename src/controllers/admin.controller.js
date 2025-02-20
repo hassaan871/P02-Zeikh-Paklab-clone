@@ -214,7 +214,7 @@ const getAllOrdersController = async (req, res) => {
     }
 }
 
-const getAllCanceledOrders = async (req, res) => {
+const getAllCanceledOrdersController = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.user.userId });
         if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
@@ -223,6 +223,25 @@ const getAllCanceledOrders = async (req, res) => {
         if(!canceledOrders) return res.status(404).json({"error":"not a single Canceled order"});
 
         return res.status(200).json(canceledOrders);
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const getAllDeliveredOrdersController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        const deliveredOrders = await Order.find({orderStatus: "delivered"});
+        if(!deliveredOrders) return res.status(404).json({"error":"not a single order Delivered"});
+
+        return res.status(200).json(deliveredOrders);
 
     } catch (error) {
         const result = {
@@ -244,5 +263,6 @@ module.exports = {
     deleteLaptopController,
     deleteSmartwatchController,
     getAllOrdersController,
-    getAllCanceledOrders
+    getAllCanceledOrdersController,
+    getAllDeliveredOrdersController
 }
