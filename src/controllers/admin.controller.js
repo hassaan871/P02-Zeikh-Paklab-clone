@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const Order = require('../models/order.model');
 const bcrypt = require('bcrypt');
 const { validateLoginUser } = require('../validations/user.validations');
 const { addLaptopProductController, addLaptopImageController, softDeleteLaptopController } = require('./laptop.controller');
@@ -188,7 +189,12 @@ const deleteSmartwatchController = async (req, res) => {
 
 const getAllOrdersController = async (req, res) => {
     try {
-        
+        const user = await User.findOne({ _id: req.user.userId });
+        if(!user.isAdmin) return res.status(401).json({"error": "Unauthorized Access. "});
+
+        const order = await Order.find();
+        return res.status(200).json(order);
+                
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -207,5 +213,6 @@ module.exports = {
     createSmartWatchProductController,
     uploadSmartWatchImageController,
     deleteLaptopController,
-    deleteSmartwatchController
+    deleteSmartwatchController,
+    getAllOrdersController
 }
