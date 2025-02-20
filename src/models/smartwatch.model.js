@@ -69,7 +69,7 @@ const smartwatch = new mongoose.Schema({
         required: true,
         default: false
     }
-});
+}, {timestamps: true});
 
 const Smartwatch = mongoose.model('Smartwatch', smartwatch);
 module.exports = Smartwatch;
