@@ -309,6 +309,29 @@ const getAllProcessingOrdersController = async (req, res) => {
     }
 }
 
+const updateOrderStatusController = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.user.userId });
+        if (!user.isAdmin) return res.status(401).json({ "error": "Unauthorized Access." });
+
+        const {orderId, orderStatus} = req.body;
+        if((!orderId || !orderStatus)) return res.status(400).json({"error": "orderId and orderStatus required!"});
+
+        const order = await Order.findOne({_id: orderId});
+        order.orderStatus = orderStatus;
+        await order.save();
+
+        return res.status(200).json({"success": `orderStatus updated to ${orderStatus}`, order});
+        
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
 
 module.exports = {
     loginAdminController,
@@ -325,5 +348,6 @@ module.exports = {
     getAllDeliveredOrdersController,
     getAllShippedOrdersController,
     getAllPendingOrdersController,
-    getAllProcessingOrdersController
+    getAllProcessingOrdersController,
+    updateOrderStatusController
 }
