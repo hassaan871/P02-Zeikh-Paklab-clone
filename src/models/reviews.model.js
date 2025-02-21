@@ -44,7 +44,12 @@ const reviews = new mongoose.Schema({
         {
             type: String
         }
-    ]
+    ],
+    isDeleted: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 }, {timestamps: true});
 
 const Reviews = mongoose.model('Review', reviews);
