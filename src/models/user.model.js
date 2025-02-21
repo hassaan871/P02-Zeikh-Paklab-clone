@@ -55,6 +55,9 @@ const user = new mongoose.Schema({
             required: function () { return this.country === "Pakistan" }
         }
     },
+    wishList: [{
+        type: mongoose.Schema.Types.ObjectId
+    }],
     isDeleted: {
         type: Boolean,
         default: false,
