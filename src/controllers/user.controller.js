@@ -4,6 +4,8 @@ const { createCart } = require('../utils/createCart.util');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const Laptop = require('../models/laptop.model');
+const Smartwatch = require('../models/smartwatch.model');
 
 const userSignupController = async (req, res) => {
     try {
@@ -31,7 +33,7 @@ const userSignupController = async (req, res) => {
         delete data.password;
 
         const cart = await createCart(user._id);
-        if(!cart) console.error("Cart not created", cart);
+        if (!cart) console.error("Cart not created", cart);
 
         return res.status(201).header("x-auth-token", token).json(data);
 
@@ -116,13 +118,13 @@ const forgetPasswordController = async (req, res) => {
 const resetPasswordController = async (req, res) => {
     try {
         const { resetPasswordToken, newPassword } = req.body;
-        if( !resetPasswordToken || !newPassword ) return res.status(400).json({"error": "resetPasswordToken and newPassword both are required"});
-        
+        if (!resetPasswordToken || !newPassword) return res.status(400).json({ "error": "resetPasswordToken and newPassword both are required" });
+
         const user = await User.findOne({
             resetPasswordToken: resetPasswordToken,
             resetPasswordExpires: { $gt: Date.now() }
         });
-        if( !user ) return res.status(400).json({"error":"Invalide token or token expired"});
+        if (!user) return res.status(400).json({ "error": "Invalide token or token expired" });
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -130,10 +132,10 @@ const resetPasswordController = async (req, res) => {
         user.password = hashedPassword;
         await user.save();
 
-        res.status(200).json({"success": "password updated successfully"});
-        
+        res.status(200).json({ "success": "password updated successfully" });
+
     } catch (error) {
-        return res.status(500).json({"error": "Internal server error"});
+        return res.status(500).json({ "error": "Internal server error" });
     }
 }
 
@@ -233,6 +235,24 @@ const userCityController = async (req, res) => {
 
 const addToWishListController = async (req, res) => {
     try {
+        const { productId } = req.body;
+        if(!productId) return res.status(400).json({"error": "productId to be added in wishlist is required."});
+        
+        const user = await User.findById(req.user.userId);
+
+        const laptop = await Laptop.findById(productId);
+
+        if (!laptop) {
+            const smartwatch = await Smartwatch.findById(productId);
+            if(!smartwatch) return res.status(404).json({"error": "invalid productId. laptop/smartwatch not found"});
+            user.wishList.push(smartwatch._id);
+            await user.save();
+            return res.status(200).json({"success": "smartWatch added to wishlist", user});
+        }
+
+        user.wishList.push(laptop._id);
+        await user.save();
+        return res.status(200).json({"success": "laptop added to wishlist", user});
         
     } catch (error) {
         const result = {
