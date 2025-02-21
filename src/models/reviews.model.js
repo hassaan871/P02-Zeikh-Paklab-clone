@@ -6,6 +6,16 @@ const reviews = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        refPath: 'category'
+    },
+    category: {
+        type: String,
+        required: true,
+        enum: ['Laptop', 'Smartwatch']
+    },
     value: {
         type: Number,
         required: true,
