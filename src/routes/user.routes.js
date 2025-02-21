@@ -9,7 +9,8 @@ const {
     userPostalCodeController,
     userProvinceController,
     userCityController,
-    addToWishListController
+    addToWishListController,
+    removeFromWishListController
 } = require('../controllers/user.controller');
 
 const auth = require('../middlewares/auth.middleware');
@@ -30,5 +31,6 @@ router.post('/province', [auth], userProvinceController);
 router.post('/city', [auth], userCityController);
 router.post('/postal-code', [auth], userPostalCodeController);
 router.post('/add-to-wishlist', [auth], addToWishListController);
+router.post('/remove-from-wishlist', [auth], removeFromWishListController);
 
 module.exports = router;

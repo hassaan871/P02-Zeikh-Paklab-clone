@@ -253,7 +253,31 @@ const addToWishListController = async (req, res) => {
         user.wishList.push(laptop._id);
         await user.save();
         return res.status(200).json({"success": "laptop added to wishlist", user});
-        
+
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "error-message": error.message ? error.message : "Internal server error"
+        }
+        return res.status(500).json(result);
+    }
+}
+
+const removeFromWishListController = async (req, res) => {
+    try {
+        const {productId} = req.body;
+        if (!productId) return res.status(400).json({"error":"productId to be removed form the wishlist is required"});
+
+        const user = await User.findById(req.user.userId);
+        for (let i=0; i<user.wishList.length; i++) {
+            if(productId === user.wishList[i].toString()){
+                user.wishList.splice(i,1);
+                await user.save();
+                return res.status(200).json({"success": "product removed from the wishlist", user});
+            }
+        }
+
+        return res.status(404).json({"error": "product not found in wishlist"});
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -274,5 +298,6 @@ module.exports = {
     userPostalCodeController,
     userProvinceController,
     userCityController,
-    addToWishListController
+    addToWishListController,
+    removeFromWishListController
 }
