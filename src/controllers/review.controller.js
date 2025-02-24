@@ -41,6 +41,19 @@ const addReviewController = async (req, res) => {
 
 const updateReviewController = async (req, res) => {
     try {
+        const { productId, value, quality, price, updatedReview } = req.body;
+        if (!productId) return res.status(400).json({ "error": "productId is required" });
+
+        if (!value && !quality && !price && !review) return res.json(400).json({ "error": "atleast one figure to be updated required" });
+
+        const review = await Review.findOne({ userId, productId });
+        if (value) review.value = value;
+        if(quality) review.quality = quality;
+        if(price) review.price = price;
+        if(updatedReview) review.review = updatedReview;
+
+        await review.save();
+        return res.status(200).json({"success": "review updated succsessfully", review});
         
     } catch (error) {
         const result = {
@@ -57,16 +70,16 @@ const deleteReviewController = async (req, res) => {
 
         const { productId } = req.body;
         if (!productId) return res.status(400).json({ "error": "productId is required." });
-        
-        const review = await Review.findOne({ userId, productId});
-        if(!review) return res.status(404).json({"error": "review not found"});
 
-        if(review.isDeleted) return res.status(400).json({"error": "review already deleted"});
+        const review = await Review.findOne({ userId, productId });
+        if (!review) return res.status(404).json({ "error": "review not found" });
+
+        if (review.isDeleted) return res.status(400).json({ "error": "review already deleted" });
 
         review.isDeleted = true;
         await review.save();
 
-        return res.status(200).json({"success": "review deleted successfully."});
+        return res.status(200).json({ "success": "review deleted successfully." });
 
     } catch (error) {
         const result = {
