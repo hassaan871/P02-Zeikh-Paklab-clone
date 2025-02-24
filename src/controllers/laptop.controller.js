@@ -1,8 +1,10 @@
 const Laptop = require('../models/laptop.model');
+
 const { uploadOnCloudinary } = require('../utils/cloudinary.util');
+const asyncHandler = require('../utils/asyncHandler');
 
 const addLaptopProductController = async (req, res) => {
-    try {
+    
         const {
             name,
             description,
@@ -115,120 +117,69 @@ const addLaptopProductController = async (req, res) => {
         });
 
         return res.status(201).json(laptop);
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const addLaptopImageController = async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).json({ "error": "file not provided to be uploaded" });
-        if (!req.body.laptopId) return res.status(400).json({ "error": "Laptop id not provided" });
+ 
+        if (!req.file) return res.status(400).json({ "error-message": "file not provided to be uploaded" });
+        if (!req.body.laptopId) return res.status(400).json({ "error-message": "Laptop id not provided" });
 
         const upload = await uploadOnCloudinary(req.file.path);
         const laptop = await Laptop.findOneAndUpdate({ _id: req.body.laptopId }, { $set: { "image": upload.url } });
-        if (!laptop) return res.status(404).json({ "error": "Laptop not found" });
+        if (!laptop) return res.status(404).json({ "error-message": "Laptop not found" });
 
-        return res.status(200).json({ "success": "Image uploaded successfully", laptop });
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
+        return res.status(200).json({ "success-message": "Image uploaded successfully", laptop });
 }
 
 const getAllLaptopsController = async (req, res) => {
-    try {
+
         const laptops = await Laptop.find();
-        if (!laptops) return res.status(404).json({ "error": "no laptop found" });
+        if (!laptops) return res.status(404).json({ "error-message": "no laptop found" });
 
         return res.status(200).json(laptops);
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const searchLaptopController = async (req, res) => {
-    try {
+
         const { name } = req.body;
-        if (!name) return res.status(400).json({ "error": "must required laptop name to be searched" });
+        if (!name) return res.status(400).json({ "error-message": "must required laptop name to be searched" });
 
         const laptop = await Laptop.findOne({ name });
-        if (!laptop) return res.status(404).json({ "error": "no laptop found" });
+        if (!laptop) return res.status(404).json({ "error-message": "no laptop found" });
 
         return res.status(200).json(laptop);
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const getAllNewLaptopsController = async (req, res) => {
-    try {
+
         const newLaptops = await Laptop.find({ "specifications.condition": "new" });
-        if (!newLaptops) return res.status(404).json({ "message": "no new laptop found" });
+        if (!newLaptops) return res.status(404).json({ "error-message": "no new laptop found" });
 
         return res.status(200).json(newLaptops);
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const getAllUsedLaptopsController = async (req, res) => {
-    try {
+
         const usedLaptops = await Laptop.find({ "specifications.condition": "used" });
-        if (!usedLaptops) return res.status(404).json({ "message": "no used laptop found" });
+        if (!usedLaptops) return res.status(404).json({ "error-message": "no used laptop found" });
 
         return res.status(200).json(usedLaptops);
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const softDeleteLaptopController = async (req, res) => {
-    try {
+
         const laptop = await Laptop.findOneAndUpdate({"_id": req.body.laptopId}, { $set: {isDeleted: true}},{new: true});
-        if(!laptop) return res.status(404).json({"error": "Laptop not found. Invalid LaptopId"});
+        if(!laptop) return res.status(404).json({"error-message": "Laptop not found. Invalid LaptopId"});
 
-        return res.status(200).json({"success": "Laptop softly deleted", laptop});
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
+        return res.status(200).json({"success-message": "Laptop softly deleted", laptop});
 }
 
 module.exports = {
-    addLaptopProductController,
-    addLaptopImageController,
-    getAllLaptopsController,
-    searchLaptopController,
-    getAllNewLaptopsController,
-    getAllUsedLaptopsController,
-    softDeleteLaptopController
+    addLaptopProductController: asyncHandler(addLaptopProductController),
+    addLaptopImageController: asyncHandler(addLaptopImageController),
+    getAllLaptopsController: asyncHandler(getAllLaptopsController),
+    searchLaptopController: asyncHandler(searchLaptopController),
+    getAllNewLaptopsController: asyncHandler(getAllNewLaptopsController),
+    getAllUsedLaptopsController: asyncHandler(getAllUsedLaptopsController),
+    softDeleteLaptopController: asyncHandler(softDeleteLaptopController)
 }
