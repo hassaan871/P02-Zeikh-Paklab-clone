@@ -1,7 +1,9 @@
 const Review = require('../models/review.model');
 
+const asyncHandler = require('../utils/asyncHandler');
+
 const addReviewController = async (req, res) => {
-    try {
+
         const { laptopId, smartwatchId, value, quality, price, review } = req.body;
         if (!laptopId && !smartwatchId) return res.status(400).json({ "error": "product Id is required. (smartwatchId or laptopId)" });
 
@@ -29,18 +31,10 @@ const addReviewController = async (req, res) => {
         const userReview = await Review.create(reviewDocument);
 
         return res.status(201).json({ "success": "review posted successfully", userReview });
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "erro-message": error.message ? error.message : "Internal server error"
-        };
-        return res.status(500).json(result);
-    }
 }
 
 const updateReviewController = async (req, res) => {
-    try {
+    
         const { productId, value, quality, price, updatedReview } = req.body;
         if (!productId) return res.status(400).json({ "error": "productId is required" });
 
@@ -54,18 +48,10 @@ const updateReviewController = async (req, res) => {
 
         await review.save();
         return res.status(200).json({"success": "review updated succsessfully", review});
-        
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "erro-message": error.message ? error.message : "Internal server error"
-        };
-        return res.status(500).json(result);
-    }
 }
 
 const deleteReviewController = async (req, res) => {
-    try {
+    
         const { userId } = req.user;
 
         const { productId } = req.body;
@@ -80,18 +66,10 @@ const deleteReviewController = async (req, res) => {
         await review.save();
 
         return res.status(200).json({ "success": "review deleted successfully." });
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "erro-message": error.message ? error.message : "Internal server error"
-        };
-        return res.status(500).json(result);
-    }
 }
 
 module.exports = {
-    addReviewController,
-    updateReviewController,
-    deleteReviewController
+    addReviewController: asyncHandler(addReviewController),
+    updateReviewController: asyncHandler(updateReviewController),
+    deleteReviewController: asyncHandler(deleteReviewController)
 }
