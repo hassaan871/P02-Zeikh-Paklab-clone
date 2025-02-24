@@ -95,7 +95,7 @@ const resetPasswordController = async (req, res) => {
         const { resetPasswordToken, newPassword } = req.body;
         if (!resetPasswordToken || !newPassword) return res.status(400).json({ "error-message": "resetPasswordToken and newPassword both are required" });
 
-        if ( newPassword.length === 5 ) return res.status(400).json({"error-message": "password length must be greater thar or equal to 5."});
+        if ( newPassword.length < 5 ) return res.status(400).json({"error-message": "password length must be greater thar or equal to 5."});
 
         const user = await User.findOne({
             resetPasswordToken: resetPasswordToken,
@@ -140,6 +140,8 @@ const userStreetAddressController = async (req, res) => {
         const { streetAddress } = req.body;
         if (!streetAddress) return res.status(400).json({ "error-message": "Street address is required" });
 
+        if( streetAddress.length < 5) return res.status(400).json({"error-message": "street address must be greater than equal to 5 characters long"});
+
         const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.streetAddress": streetAddress } }, { new: true });
         if (!user) return res.status(404).json({ "error-message": "User not found" });
 
@@ -161,39 +163,31 @@ const userPostalCodeController = async (req, res) => {
 }
 
 const userProvinceController = async (req, res) => {
-    try {
+
         const { province } = req.body;
-        if (!province) return res.status(400).json({ "error": "Province is required" });
+        if (!province) return res.status(400).json({ "error-message": "Province is required" });
 
         const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.province": province } }, { new: true });
-        if (!user) return res.status(404).json({ "error": "User not found" });
+        if (!user) return res.status(404).json({ "error-message": "User not found" });
 
-        return res.status(200).json({ "message": "Province updated", user });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
+        return res.status(200).json({ "success-message": "Province updated", user });
 }
 
 const userCityController = async (req, res) => {
-    try {
+
         const { city } = req.body;
-        if (!city) return res.status(400).json({ "error": "City is required" });
+        if (!city) return res.status(400).json({ "error-message": "City is required" });
 
         const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.city": city } }, { new: true });
-        if (!user) return res.status(404).json({ "error": "User not found" });
+        if (!user) return res.status(404).json({ "error-message": "User not found" });
 
-        return res.status(200).json({ "message": "City updated", user });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
+        return res.status(200).json({ "success-message": "City updated", user });
 }
 
 const addToWishListController = async (req, res) => {
-    try {
+
         const { productId } = req.body;
-        if (!productId) return res.status(400).json({ "error": "productId to be added in wishlist is required." });
+        if (!productId) return res.status(400).json({ "error-message": "productId to be added in wishlist is required." });
 
         const user = await User.findById(req.user.userId);
 
@@ -201,47 +195,33 @@ const addToWishListController = async (req, res) => {
 
         if (!laptop) {
             const smartwatch = await Smartwatch.findById(productId);
-            if (!smartwatch) return res.status(404).json({ "error": "invalid productId. laptop/smartwatch not found" });
+            if (!smartwatch) return res.status(404).json({ "error-message": "invalid productId. laptop/smartwatch not found" });
             user.wishList.push(smartwatch._id);
             await user.save();
-            return res.status(200).json({ "success": "smartWatch added to wishlist", user });
+            return res.status(200).json({ "success-message": "smartWatch added to wishlist", user });
         }
 
         user.wishList.push(laptop._id);
         await user.save();
-        return res.status(200).json({ "success": "laptop added to wishlist", user });
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
+        return res.status(200).json({ "success-message": "laptop added to wishlist", user });
 }
 
 const removeFromWishListController = async (req, res) => {
-    try {
+
         const { productId } = req.body;
-        if (!productId) return res.status(400).json({ "error": "productId to be removed form the wishlist is required" });
+        if (!productId) return res.status(400).json({ "error-message": "productId to be removed form the wishlist is required" });
 
         const user = await User.findById(req.user.userId);
         for (let i = 0; i < user.wishList.length; i++) {
             if (productId === user.wishList[i].toString()) {
                 user.wishList.splice(i, 1);
                 await user.save();
-                return res.status(200).json({ "success": "product removed from the wishlist", user });
+                return res.status(200).json({ "success-message": "product removed from the wishlist", user });
             }
         }
 
-        return res.status(404).json({ "error": "product not found in wishlist" });
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
+        return res.status(404).json({ "error-message": "product not found in wishlist" });
+    
 }
 
 module.exports = {
@@ -253,8 +233,8 @@ module.exports = {
     userPhoneNumberController: asyncHandler(userPhoneNumberController),
     userStreetAddressController: asyncHandler(userStreetAddressController),
     userPostalCodeController: asyncHandler(userPostalCodeController),
-    userProvinceController,
-    userCityController,
-    addToWishListController,
-    removeFromWishListController
+    userProvinceController: asyncHandler(userProvinceController),
+    userCityController: asyncHandler(userCityController),
+    addToWishListController: asyncHandler(addToWishListController),
+    removeFromWishListController: asyncHandler(removeFromWishListController)
 }
