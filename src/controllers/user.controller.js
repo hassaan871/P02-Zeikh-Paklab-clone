@@ -91,15 +91,17 @@ const forgetPasswordController = async (req, res) => {
 }
 
 const resetPasswordController = async (req, res) => {
-    try {
-        const { resetPasswordToken, newPassword } = req.body;
-        if (!resetPasswordToken || !newPassword) return res.status(400).json({ "error": "resetPasswordToken and newPassword both are required" });
 
+        const { resetPasswordToken, newPassword } = req.body;
+        if (!resetPasswordToken || !newPassword) return res.status(400).json({ "error-message": "resetPasswordToken and newPassword both are required" });
+
+        if ( newPassword.length === 5 ) return res.status(400).json({"error-message": "password length must be greater thar or equal to 5."});
+        
         const user = await User.findOne({
             resetPasswordToken: resetPasswordToken,
             resetPasswordExpires: { $gt: Date.now() }
         });
-        if (!user) return res.status(400).json({ "error": "Invalide token or token expired" });
+        if (!user) return res.status(400).json({ "error-message": "Invalide token or token expired" });
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -107,11 +109,7 @@ const resetPasswordController = async (req, res) => {
         user.password = hashedPassword;
         await user.save();
 
-        res.status(200).json({ "success": "password updated successfully" });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
+        return res.status(200).json({ "success": "password updated successfully" });
 }
 
 const userAccountInfoController = async (req, res) => {
@@ -266,7 +264,7 @@ module.exports = {
     userSignupController: asyncHandler(userSignupController),
     userLoginController: asyncHandler(userLoginController),
     forgetPasswordController: asyncHandler(forgetPasswordController),
-    resetPasswordController,
+    resetPasswordController: asyncHandler(resetPasswordController),
     userAccountInfoController,
     userPhoneNumberController,
     userStreetAddressController,
