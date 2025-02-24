@@ -42,24 +42,20 @@ const userSignupController = async (req, res) => {
 }
 
 const userLoginController = async (req, res) => {
-    try {
+
         const { email, password } = req.body;
 
         const { error } = validateLoginUser({ email, password });
-        if (error) return res.status(401).json({ "error": error.details[0].message });
+        if (error) return res.status(401).json({ "error-message": error.details[0].message });
 
         const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ "error": "Invalid email" });
+        if (!user) return res.status(404).json({ "error-message": "Invalid email" });
 
         const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) return res.status(401).json({ "error": "Invalid password" });
+        if (!validPassword) return res.status(401).json({ "error-message": "Invalid password" });
 
         const token = user.generateAuthToken();
         return res.status(200).json({ token });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
 }
 
 const forgetPasswordController = async (req, res) => {
@@ -281,7 +277,7 @@ const removeFromWishListController = async (req, res) => {
 
 module.exports = {
     userSignupController: asyncHandler(userSignupController),
-    userLoginController,
+    userLoginController: asyncHandler(userLoginController),
     forgetPasswordController,
     resetPasswordController,
     userAccountInfoController,
