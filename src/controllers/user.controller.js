@@ -1,52 +1,44 @@
 const User = require('../models/user.model');
-const { validateUser, validateLoginUser } = require('../validations/user.validations');
-const { createCart } = require('../utils/createCart.util');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const Laptop = require('../models/laptop.model');
 const Smartwatch = require('../models/smartwatch.model');
 
+const asyncHandler = require('../utils/asyncHandler');
+const { validateUser, validateLoginUser } = require('../validations/user.validations');
+const { createCart } = require('../utils/createCart.util');
+
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
 const userSignupController = async (req, res) => {
-    try {
-        const { error } = validateUser(req.body);
-        if (error) res.status(400).json({ "error-message": error.details[0].message });
 
-        const { firstname, lastname, email, password } = req.body;
+    const { error } = validateUser(req.body);
+    if (error) return res.status(400).json({ "error-message": error.details[0].message });
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(409).json({ "error-message": "Email already registered" });
+    const { firstname, lastname, email, password } = req.body;
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(409).json({ "error-message": "Email already registered" });
 
-        const user = await User.create({
-            firstname,
-            lastname,
-            email,
-            password: hashedPassword
-        });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-        const token = user.generateAuthToken();
+    const user = await User.create({
+        firstname,
+        lastname,
+        email,
+        password: hashedPassword
+    });
 
-        const data = user.toObject();
-        delete data.password;
+    const token = user.generateAuthToken();
 
-        const cart = await createCart(user._id);
-        if (!cart) console.error("Cart not created", cart);
+    const data = user.toObject();
+    delete data.password;
 
-        return res.status(201).header("x-auth-token", token).json(data);
+    const cart = await createCart(user._id);
+    if (!cart) console.error("Cart not created", cart);
 
-    } catch (error) {
-        if (error.code === 11000) return res.status(409).json({ "error-message": "Duplicate entry " + error.message });
-
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message
-        };
-
-        return res.status(500).json(result);
-    }
+    return res.status(201).header("x-auth-token", token).json(data);
 }
 
 const userLoginController = async (req, res) => {
@@ -236,23 +228,23 @@ const userCityController = async (req, res) => {
 const addToWishListController = async (req, res) => {
     try {
         const { productId } = req.body;
-        if(!productId) return res.status(400).json({"error": "productId to be added in wishlist is required."});
-        
+        if (!productId) return res.status(400).json({ "error": "productId to be added in wishlist is required." });
+
         const user = await User.findById(req.user.userId);
 
         const laptop = await Laptop.findById(productId);
 
         if (!laptop) {
             const smartwatch = await Smartwatch.findById(productId);
-            if(!smartwatch) return res.status(404).json({"error": "invalid productId. laptop/smartwatch not found"});
+            if (!smartwatch) return res.status(404).json({ "error": "invalid productId. laptop/smartwatch not found" });
             user.wishList.push(smartwatch._id);
             await user.save();
-            return res.status(200).json({"success": "smartWatch added to wishlist", user});
+            return res.status(200).json({ "success": "smartWatch added to wishlist", user });
         }
 
         user.wishList.push(laptop._id);
         await user.save();
-        return res.status(200).json({"success": "laptop added to wishlist", user});
+        return res.status(200).json({ "success": "laptop added to wishlist", user });
 
     } catch (error) {
         const result = {
@@ -265,19 +257,19 @@ const addToWishListController = async (req, res) => {
 
 const removeFromWishListController = async (req, res) => {
     try {
-        const {productId} = req.body;
-        if (!productId) return res.status(400).json({"error":"productId to be removed form the wishlist is required"});
+        const { productId } = req.body;
+        if (!productId) return res.status(400).json({ "error": "productId to be removed form the wishlist is required" });
 
         const user = await User.findById(req.user.userId);
-        for (let i=0; i<user.wishList.length; i++) {
-            if(productId === user.wishList[i].toString()){
-                user.wishList.splice(i,1);
+        for (let i = 0; i < user.wishList.length; i++) {
+            if (productId === user.wishList[i].toString()) {
+                user.wishList.splice(i, 1);
                 await user.save();
-                return res.status(200).json({"success": "product removed from the wishlist", user});
+                return res.status(200).json({ "success": "product removed from the wishlist", user });
             }
         }
 
-        return res.status(404).json({"error": "product not found in wishlist"});
+        return res.status(404).json({ "error": "product not found in wishlist" });
     } catch (error) {
         const result = {
             "error-code": error.code ? error.code : "no error code",
@@ -288,7 +280,7 @@ const removeFromWishListController = async (req, res) => {
 }
 
 module.exports = {
-    userSignupController,
+    userSignupController: asyncHandler(userSignupController),
     userLoginController,
     forgetPasswordController,
     resetPasswordController,
