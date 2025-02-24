@@ -147,21 +147,17 @@ const userStreetAddressController = async (req, res) => {
 }
 
 const userPostalCodeController = async (req, res) => {
-    try {
+
         const { postalCode } = req.body;
-        if (!postalCode) return res.status(400).json({ "error": "Postal code is required" });
+        if (!postalCode) return res.status(400).json({ "error-message": "Postal code is required" });
 
         const postalCodeRegex = /^\d{5}$/;
-        if (!postalCodeRegex.test(postalCode)) return res.status(400).json({ "error": "postal code must be a 5 digit number" });
+        if (!postalCodeRegex.test(postalCode)) return res.status(400).json({ "error-message": "postal code must be a 5 digit number" });
 
         const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.postalCode": postalCode } }, { new: true });
-        if (!user) return res.status(404).json({ "error": "User not found" });
+        if (!user) return res.status(404).json({ "error-message": "User not found" });
 
-        return res.status(200).json({ "message": "Postal Code updated", user });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
+        return res.status(200).json({ "success-message": "Postal Code updated", user });
 }
 
 const userProvinceController = async (req, res) => {
@@ -256,7 +252,7 @@ module.exports = {
     userAccountInfoController: asyncHandler(userAccountInfoController),
     userPhoneNumberController: asyncHandler(userPhoneNumberController),
     userStreetAddressController: asyncHandler(userStreetAddressController),
-    userPostalCodeController,
+    userPostalCodeController: asyncHandler(userPostalCodeController),
     userProvinceController,
     userCityController,
     addToWishListController,
