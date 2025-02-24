@@ -136,18 +136,14 @@ const userPhoneNumberController = async (req, res) => {
 }
 
 const userStreetAddressController = async (req, res) => {
-    try {
+
         const { streetAddress } = req.body;
-        if (!streetAddress) return res.status(400).json({ "error": "Street address is required" });
+        if (!streetAddress) return res.status(400).json({ "error-message": "Street address is required" });
 
         const user = await User.findByIdAndUpdate(req.user.userId, { $set: { "address.streetAddress": streetAddress } }, { new: true });
-        if (!user) return res.status(404).json({ "error": "User not found" });
+        if (!user) return res.status(404).json({ "error-message": "User not found" });
 
-        return res.status(200).json({ "message": "Street Address updated", user });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
+        return res.status(200).json({ "success-message": "Street Address updated", user });
 }
 
 const userPostalCodeController = async (req, res) => {
@@ -259,7 +255,7 @@ module.exports = {
     resetPasswordController: asyncHandler(resetPasswordController),
     userAccountInfoController: asyncHandler(userAccountInfoController),
     userPhoneNumberController: asyncHandler(userPhoneNumberController),
-    userStreetAddressController,
+    userStreetAddressController: asyncHandler(userStreetAddressController),
     userPostalCodeController,
     userProvinceController,
     userCityController,
