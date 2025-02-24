@@ -26,10 +26,7 @@ const addReviewController = async (req, res) => {
         }
         console.log(reviewDocument);
         
-
-        const userReview = await Review.create(
-            reviewDocument
-        );
+        const userReview = await Review.create(reviewDocument);
 
         return res.status(201).json({"success": "review posted successfully", userReview});
 
@@ -39,6 +36,18 @@ const addReviewController = async (req, res) => {
             "erro-message": error.message ? error.message : "Internal server error"
         };
         return res.status(500).json(result); 
+    }
+}
+
+const deleteReview = async(req, res) => {
+    try {
+        
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "erro-message": error.message ? error.message : "Internal server error"
+        };
+        return res.status(500).json(result);
     }
 }
 

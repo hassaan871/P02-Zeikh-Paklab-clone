@@ -7,5 +7,6 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/add-review', [auth], addReviewController);
+router.delete('/delete-review', [auth], );
 
 module.exports = router;
