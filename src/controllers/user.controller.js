@@ -87,7 +87,7 @@ const forgetPasswordController = async (req, res) => {
         };
 
         await sendEmail(mail);
-        return res.status(200).json({ "message": "Password reset email sent" });
+        return res.status(200).json({ "success-message": "Password reset email sent" });
 }
 
 const resetPasswordController = async (req, res) => {
@@ -96,7 +96,7 @@ const resetPasswordController = async (req, res) => {
         if (!resetPasswordToken || !newPassword) return res.status(400).json({ "error-message": "resetPasswordToken and newPassword both are required" });
 
         if ( newPassword.length === 5 ) return res.status(400).json({"error-message": "password length must be greater thar or equal to 5."});
-        
+
         const user = await User.findOne({
             resetPasswordToken: resetPasswordToken,
             resetPasswordExpires: { $gt: Date.now() }
@@ -109,38 +109,30 @@ const resetPasswordController = async (req, res) => {
         user.password = hashedPassword;
         await user.save();
 
-        return res.status(200).json({ "success": "password updated successfully" });
+        return res.status(200).json({ "success-message": "password updated successfully" });
 }
 
 const userAccountInfoController = async (req, res) => {
-    try {
+
         const user = await User.findById(req.user.userId);
-        if (!user) return res.status(404).json({ "error": "User not found" });
+        if (!user) return res.status(404).json({ "error-message": "User not found" });
 
         const { password, ...withoutPassword } = user._doc;
         return res.status(200).json(withoutPassword);
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
 }
 
 const userPhoneNumberController = async (req, res) => {
-    try {
+
         const { phoneNumber } = req.body;
-        if (!phoneNumber) return res.status(400).json({ "error": "Phone number is required" });
+        if (!phoneNumber) return res.status(400).json({ "error-message": "Phone number is required" });
 
         const phoneNumberRegex = /^\d{11}$/;
-        if (!phoneNumberRegex.test(phoneNumber)) return res.status(400).json({ "error": "phone number must be of 11 digit" });
+        if (!phoneNumberRegex.test(phoneNumber)) return res.status(400).json({ "error-message": "phone number must be of 11 digit" });
 
         const user = await User.findByIdAndUpdate(req.user.userId, { $set: { phoneNumber } }, { new: true });
-        if (!user) return res.status(404).json({ "error": "User not found" });
+        if (!user) return res.status(404).json({ "error-message": "User not found" });
 
-        return res.status(200).json({ "message": "Phone number updated", user });
-
-    } catch (error) {
-        return res.status(500).json({ "error": "Internal server error" });
-    }
+        return res.status(200).json({ "success-message": "Phone number updated", user });
 }
 
 const userStreetAddressController = async (req, res) => {
@@ -265,8 +257,8 @@ module.exports = {
     userLoginController: asyncHandler(userLoginController),
     forgetPasswordController: asyncHandler(forgetPasswordController),
     resetPasswordController: asyncHandler(resetPasswordController),
-    userAccountInfoController,
-    userPhoneNumberController,
+    userAccountInfoController: asyncHandler(userAccountInfoController),
+    userPhoneNumberController: asyncHandler(userPhoneNumberController),
     userStreetAddressController,
     userPostalCodeController,
     userProvinceController,
