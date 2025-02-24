@@ -4,8 +4,10 @@ const Laptop = require('../models/laptop.model');
 const SmartWatch = require('../models/smartwatch.model');
 const Order = require('../models/order.model');
 
+const asyncHandler = require('../utils/asyncHandler');
+
 const checkoutContoller = async (req, res) => {
-    try {
+
         const { userId } = req.user;
         const user = await User.findById(userId);
 
@@ -50,18 +52,10 @@ const checkoutContoller = async (req, res) => {
         await cart.save();
         result.push({ totalBill });
         return res.status(200).json(result);
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const confirmOrderController = async (req, res) => {
-    try {
+
         const { userId } = req.user;
 
         const { paymentMethod } = req.body;
@@ -78,17 +72,10 @@ const confirmOrderController = async (req, res) => {
         });
 
         return res.status(201).json({ "success": "Order placed successfully", order });
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 const cancelOrder = async (req, res) => {
-    try {
+
         const { userId } = req.user;
 
         const { orderId } = req.body;
@@ -110,17 +97,10 @@ const cancelOrder = async (req, res) => {
         }
 
         return res.status(200).json({"success": "Order canceled successfully", order});
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 module.exports = {
-    checkoutContoller,
-    confirmOrderController,
-    cancelOrder
+    checkoutContoller: asyncHandler(checkoutContoller),
+    confirmOrderController: asyncHandler(confirmOrderController),
+    cancelOrder: asyncHandler(cancelOrder)
 }
