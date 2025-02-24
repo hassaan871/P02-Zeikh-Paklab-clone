@@ -39,7 +39,19 @@ const addReviewController = async (req, res) => {
     }
 }
 
-const deleteReview = async (req, res) => {
+const updateReviewController = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        const result = {
+            "error-code": error.code ? error.code : "no error code",
+            "erro-message": error.message ? error.message : "Internal server error"
+        };
+        return res.status(500).json(result);
+    }
+}
+
+const deleteReviewController = async (req, res) => {
     try {
         const { userId } = req.user;
 
@@ -67,5 +79,6 @@ const deleteReview = async (req, res) => {
 
 module.exports = {
     addReviewController,
-    deleteReview
+    updateReviewController,
+    deleteReviewController
 }
