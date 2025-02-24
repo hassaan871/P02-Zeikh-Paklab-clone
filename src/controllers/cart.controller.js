@@ -2,10 +2,12 @@ const Cart = require('../models/cart.model');
 const Laptop = require('../models/laptop.model');
 const SmartWatch = require('../models/smartwatch.model');
 
+const asyncHandler = require('../utils/asyncHandler');
+
 const addToCartController = async (req, res) => {
-    try {
+
         const { laptopId, smartwatchId, laptopQnty, smartwatchQnty } = req.body;
-        if (!laptopId && !smartwatchId) return res.status(400).json({ "error": "Nothing to add in cart" });
+        if (!laptopId && !smartwatchId) return res.status(400).json({ "error-message": "Nothing to add in cart" });
 
         let cart = await Cart.findOne({
             userId: req.user.userId
@@ -41,32 +43,24 @@ const addToCartController = async (req, res) => {
         }
 
         await cart.save();
-        return res.status(201).json({ "success": "Item added to cart", cart });
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
+        return res.status(201).json({ "success-message": "Item added to cart", cart });
 }
 
 const deleteFromCartController = async (req, res) => {
-    try {
+
         const { laptopId, smartwatchId, laptopQnty, smartwatchQnty } = req.body;
-        if (!laptopId && !smartwatchId) return res.status(400).json({ "error": "Need product id(laptopId or smartwatchId) to delete from the cart" });
+        if (!laptopId && !smartwatchId) return res.status(400).json({ "error-message": "Need product id(laptopId or smartwatchId) to delete from the cart" });
 
         const cart = await Cart.findOne({
             userId: req.user.userId
         });
-        if (cart.product === null) return res.status(404).json({ "error": "no product found. Cart is already empty" });
+        if (cart.product === null) return res.status(404).json({ "error-message": "no product found. Cart is already empty" });
 
         if (laptopId) {
             const existingLaptop = cart.product.find(product => product.itemId.toString() === laptopId);
             if (existingLaptop) {
                 if(existingLaptop.quantity-laptopQnty < 0){
-                    return res.status(400).json({"error":"you cannot delete more than in your cart"});
+                    return res.status(400).json({"error-message":"you cannot delete more than in your cart"});
                 }else{
                     existingLaptop.quantity -= laptopQnty;
                     if(existingLaptop.quantity === 0){
@@ -74,7 +68,7 @@ const deleteFromCartController = async (req, res) => {
                     }
                 }
             } else {
-                return res.status(400).json({"error": "Laptop not found. Invalid Laptop ID"});
+                return res.status(400).json({"error-message": "Laptop not found. Invalid Laptop ID"});
             }
         }
 
@@ -82,7 +76,7 @@ const deleteFromCartController = async (req, res) => {
             const existingSmartWatch = cart.product.find(product => product.itemId.toString() === smartwatchId);
             if (existingSmartWatch) {
                 if(existingSmartWatch.quantity-smartwatchQnty < 0){
-                    return res.status(400).json({"error":"you cannot delete more than in your cart"});
+                    return res.status(400).json({"error-message":"you cannot delete more than in your cart"});
                 }else{
                     existingSmartWatch.quantity -= smartwatchQnty;
                     if(existingSmartWatch.quantity === 0){
@@ -90,34 +84,25 @@ const deleteFromCartController = async (req, res) => {
                     }
                 }
             } else {
-                return res.status(400).json({"error": "Smartwatch not found. Invalid SmartWatch ID"});
+                return res.status(400).json({"error-message": "Smartwatch not found. Invalid SmartWatch ID"});
             }
         }
 
         await cart.save();
-        return res.status(201).json({ "success": "Item removed from the cart", cart });
-
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
+        return res.status(201).json({ "success-message": "Item removed from the cart", cart });
 }
 
 const getCartController = async (req, res) => {
-    try {
+
         const {userId} = req.user;
 
         const cart = await Cart.findOne({ userId });
-        if(!cart) return res.status(404).json({"error": "cart of the user not found."});
+        if(!cart) return res.status(404).json({"error-message": "cart of the user not found."});
 
         let result = [];
         for (const item of cart.product) {
                 if(item.category === 'Laptop'){
                     const laptop = await Laptop.findById(item.itemId);
-                    // console.log("Laptop", laptop);
                     
                     const product = {
                         "item-name": laptop.name,
@@ -129,7 +114,6 @@ const getCartController = async (req, res) => {
                 }
                 if(item.category === 'Smartwatch'){
                     const smartwatch = await SmartWatch.findById(item.itemId);
-                    // console.log("Smartwatch", smartwatch);
                     
                     const product = {
                         "item-name": smartwatch.name,
@@ -142,17 +126,10 @@ const getCartController = async (req, res) => {
             }
             
         return res.status(200).json({cart: result });        
-    } catch (error) {
-        const result = {
-            "error-code": error.code ? error.code : "no error code",
-            "error-message": error.message ? error.message : "Internal server error"
-        }
-        return res.status(500).json(result);
-    }
 }
 
 module.exports = {
-    addToCartController,
-    deleteFromCartController,
-    getCartController
+    addToCartController: asyncHandler(addToCartController),
+    deleteFromCartController: asyncHandler(deleteFromCartController),
+    getCartController: asyncHandler(getCartController)
 }
