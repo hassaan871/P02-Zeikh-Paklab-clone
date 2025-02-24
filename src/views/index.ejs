@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
     <title>Index-ejs</title>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    
+    <p>Index-ejs</p>
+    <script>
+        const socket = io();
+        socket.on('broadcast', ({message})=>{
+            document.body.innerHTML = '';
+            document.write(message);
+        });
+    </script>
 </body>
 </html>
