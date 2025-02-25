@@ -4,8 +4,8 @@ const auth = require('../middlewares/auth.middleware');
 const express = require('express');
 const router = express.Router();
 
-router.get('/checkout', [auth], checkoutContoller);
+router.post('/checkout', [auth], checkoutContoller);
 router.post('/confirm-order', [auth], confirmOrderController);
-router.post('/cancel-order', [auth], cancelOrderController);
+router.patch('/cancel-order', [auth], cancelOrderController);
 
 module.exports = router;
