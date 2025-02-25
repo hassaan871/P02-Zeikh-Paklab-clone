@@ -68,7 +68,11 @@ const addSmartWatchImageController = async (req, res) => {
 
 const getAllSmartWatchesController = async (req, res) => {
 
-    const smartwatches = await Smartwatch.find();
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 3;
+    const skip = (page - 1) * limit;
+
+    const smartwatches = await Smartwatch.find().skip(skip).limit(limit);
     if (!smartwatches) return res.status(404).json(smartwatches);
 
     return res.status(200).json(smartwatches);

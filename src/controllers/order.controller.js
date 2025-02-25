@@ -74,7 +74,7 @@ const confirmOrderController = async (req, res) => {
         return res.status(201).json({ "success": "Order placed successfully", order });
 }
 
-const cancelOrder = async (req, res) => {
+const cancelOrderController = async (req, res) => {
 
         const { userId } = req.user;
 
@@ -102,5 +102,5 @@ const cancelOrder = async (req, res) => {
 module.exports = {
     checkoutContoller: asyncHandler(checkoutContoller),
     confirmOrderController: asyncHandler(confirmOrderController),
-    cancelOrder: asyncHandler(cancelOrder)
+    cancelOrderController: asyncHandler(cancelOrderController)
 }

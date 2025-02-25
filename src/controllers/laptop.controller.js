@@ -137,7 +137,11 @@ const addLaptopImageController = async (req, res) => {
 
 const getAllLaptopsController = async (req, res) => {
 
-        const laptops = await Laptop.find();
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 3;
+        const skip = (page - 1) * limit;
+
+        const laptops = await Laptop.find().skip(skip).limit(limit);
         if (!laptops) return res.status(404).json({ "error-message": "no laptop found" });
 
         return res.status(200).json(laptops);
@@ -156,7 +160,11 @@ const searchLaptopController = async (req, res) => {
 
 const getAllNewLaptopsController = async (req, res) => {
 
-        const newLaptops = await Laptop.find({ "specifications.condition": "new" });
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 3;
+        const skip = (page - 1) * limit;
+
+        const newLaptops = await Laptop.find({ "specifications.condition": "new" }).skip(skip).limit(limit);
         if (!newLaptops) return res.status(404).json({ "error-message": "no new laptop found" });
 
         return res.status(200).json(newLaptops);
@@ -164,7 +172,11 @@ const getAllNewLaptopsController = async (req, res) => {
 
 const getAllUsedLaptopsController = async (req, res) => {
 
-        const usedLaptops = await Laptop.find({ "specifications.condition": "used" });
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 3;
+        const skip = (page - 1) * limit;
+
+        const usedLaptops = await Laptop.find({ "specifications.condition": "used" }).skip(skip).limit(limit);
         if (!usedLaptops) return res.status(404).json({ "error-message": "no used laptop found" });
 
         return res.status(200).json(usedLaptops);
