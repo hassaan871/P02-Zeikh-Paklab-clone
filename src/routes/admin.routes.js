@@ -1,6 +1,7 @@
 const {
     loginAdminController,
     makeAdminController,
+    removeFromAdminController,
     getAllUsersController,
     createLaptopProductController,
     uploadLaptopImageController,
@@ -28,19 +29,20 @@ router.post('/login-admin', loginAdminController);
 
 //protected routes
 router.get('/get-all-users', [auth], getAllUsersController);
-router.post('/make-admin', [auth], makeAdminController);
+router.patch('/make-admin', [auth], makeAdminController);
+router.patch('/remove-from-admin', [auth], removeFromAdminController);
 router.post('/create-laptop-product', [auth], createLaptopProductController);
 router.post('/create-smartwatch-product', [auth], createSmartWatchProductController);
-router.post('/upload-laptop-image', [auth, upload.single("laptop-image")],  uploadLaptopImageController);
-router.post('/upload-smartwatch-image', [auth, upload.single("smartwatch-image")], uploadSmartWatchImageController);
-router.post('/delete-laptop', [auth], deleteLaptopController);
-router.post('/delete-smartwatch', [auth], deleteSmartwatchController);
+router.patch('/upload-laptop-image', [auth, upload.single("laptop-image")],  uploadLaptopImageController);
+router.patch('/upload-smartwatch-image', [auth, upload.single("smartwatch-image")], uploadSmartWatchImageController);
+router.patch('/delete-laptop', [auth], deleteLaptopController);
+router.patch('/delete-smartwatch', [auth], deleteSmartwatchController);
 router.get('/get-all-orders', [auth], getAllOrdersController);
 router.get('/get-all-canceled-orders', [auth], getAllCanceledOrdersController);
 router.get('/get-all-delivered-orders', [auth], getAllDeliveredOrdersController);
 router.get('/get-all-shipped-orders', [auth], getAllShippedOrdersController);
 router.get('/get-all-pending-orders', [auth], getAllPendingOrdersController);
 router.get('/get-all-processing-orders', [auth], getAllProcessingOrdersController);
-router.post('/update-order-status', [auth], updateOrderStatusController);
+router.patch('/update-order-status', [auth], updateOrderStatusController);
 
 module.exports = router;
