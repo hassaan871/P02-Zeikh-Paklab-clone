@@ -2,6 +2,7 @@ const Review = require('../models/review.model');
 const Order = require('../models/order.model');
 
 const asyncHandler = require('../utils/asyncHandler');
+const { uploadOnCloudinary } = require('../utils/cloudinary.util');
 
 const addReviewController = async (req, res) => {
 
@@ -53,8 +54,14 @@ const addReviewController = async (req, res) => {
             reviewDocument.productId = smartwatchId;
             reviewDocument.category = "Smartwatch";
         }
+        
+        if(req.file){
+            const upload = await uploadOnCloudinary(req.file.path);
+            reviewDocument.image = upload.url;
+        }
 
         const userReview = await Review.create(reviewDocument);
+
 
         return res.status(201).json({ "success-messsage": "review posted successfully", userReview });
 }
@@ -73,6 +80,11 @@ const updateReviewController = async (req, res) => {
         if(quality) review.quality = quality;
         if(price) review.price = price;
         if(updatedReview) review.review = updatedReview;
+        
+        if(req.file){
+            const upload = await uploadOnCloudinary(req.file.path);
+            review.image = upload.url;
+        }
 
         await review.save();
         return res.status(200).json({"success-message": "review updated succsessfully", review});

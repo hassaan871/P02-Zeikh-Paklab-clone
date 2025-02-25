@@ -40,11 +40,12 @@ const review = new mongoose.Schema({
         min: 5,
         max: 1024
     },
-    image: [
+    image:
+    //  [
         {
             type: String
-        }
-    ],
+        },
+    // ],
     isDeleted: {
         type: Boolean,
         required: true,
