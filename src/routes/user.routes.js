@@ -21,16 +21,16 @@ const router = express.Router();
 router.post('/register', userSignupController);
 router.post('/login', userLoginController);
 router.post('/forget-password', forgetPasswordController);
-router.post('/reset-password', resetPasswordController);
+router.patch('/reset-password', resetPasswordController);
 
 // protected routes 
 router.get('/account-info', [auth], userAccountInfoController);
-router.post('/phone-number', [auth], userPhoneNumberController);
-router.post('/street-address', [auth], userStreetAddressController);
-router.post('/province', [auth], userProvinceController);
-router.post('/city', [auth], userCityController);
-router.post('/postal-code', [auth], userPostalCodeController);
-router.post('/add-to-wishlist', [auth], addToWishListController);
-router.post('/remove-from-wishlist', [auth], removeFromWishListController);
+router.patch('/phone-number', [auth], userPhoneNumberController);
+router.patch('/street-address', [auth], userStreetAddressController);
+router.patch('/province', [auth], userProvinceController);
+router.patch('/city', [auth], userCityController);
+router.patch('/postal-code', [auth], userPostalCodeController);
+router.patch('/add-to-wishlist', [auth], addToWishListController);
+router.delete('/remove-from-wishlist', [auth], removeFromWishListController);
 
 module.exports = router;

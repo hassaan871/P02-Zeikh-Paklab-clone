@@ -26,7 +26,6 @@ const addReviewController = async (req, res) => {
             reviewDocument.productId = smartwatchId;
             reviewDocument.category = "Smartwatch";
         }
-        console.log(reviewDocument);
 
         const userReview = await Review.create(reviewDocument);
 
