@@ -24,11 +24,11 @@ This is a Node.js-based e-commerce REST API built using Express.js and MongoDB. 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo.git
+   git clone https://github.com/https://github.com/hassaan871/P02-Zeikh-Paklab-clone.git
    ```
 2. Navigate into the project directory:
    ```bash
-   cd e-commerce-api
+   cd P02-Zeikh-Paklab-clone
    ```
 3. Install dependencies:
    ```bash
@@ -101,7 +101,7 @@ This is a Node.js-based e-commerce REST API built using Express.js and MongoDB. 
 ## Running in Development Mode
 Use nodemon to automatically restart the server on changes:
 ```bash
-npm run dev
+npm start
 ```
 
 ## Contribution
