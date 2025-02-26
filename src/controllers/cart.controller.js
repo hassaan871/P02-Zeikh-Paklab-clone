@@ -41,7 +41,7 @@ const addToCartController = async (req, res) => {
                 });
             }
         }
-
+        
         await cart.save();
         return res.status(201).json({ "success-message": "Item added to cart", cart });
 }
