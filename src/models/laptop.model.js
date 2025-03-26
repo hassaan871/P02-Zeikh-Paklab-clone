@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const mixed = mongoose.Types.Schema.Mixed
 
 const laptop = new mongoose.Schema({
     image: {
