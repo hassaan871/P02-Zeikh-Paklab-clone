@@ -12,7 +12,7 @@ setupSocket(server);
 
 dbconnect()
     .then(() => {
-        server.listen(PORT, () => { console.log(`server running on Port ${PORT}`) });
+        server.listen(PORT, '0.0.0.0',() => { console.log(`server running on Port ${PORT}`) });
     })
     .catch((error) => {
         console.log(`Mongodb connection failed: ${error}`);
